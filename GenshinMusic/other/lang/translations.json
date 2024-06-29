@@ -1,0 +1,70 @@
+{
+  "languages": {
+    "operation_options": {
+      "tr": "İşlem seçenekleri:\n",
+      "en": "Operation options:\n",
+      "de":"Bedienungsmöglichkeiten\n",
+      "ja": "操作の選択肢:\n"
+    },
+    "addition": {
+      "tr": "1. Toplama",
+      "en": "1. Addition",
+      "de": "1. Addition",
+      "ja": "1. 加算"
+    },
+    "subtraction": {
+      "tr": "2. Çıkarma",
+      "en": "2. Subtraction",
+      "de": "2. Subtraktion",
+      "ja": "2. 減算"
+    },
+    "multiplication": {
+      "tr": "3. Çarpma",
+      "en": "3. Multiplication",
+      "de": "3. Multiplikation",
+      "ja": "3. 乗算"
+    },
+    "division": {
+      "tr": "4. Bölme",
+      "en": "4. Division",
+      "de": "4. Division",
+      "ja": "4. 除算"
+    },
+    "select_operation":{
+      "tr": "Hangi işlemi yapmak istersiniz? (1/2/3/4)\n>> ",
+      "en": "Which operation do you want to perform? (1/2/3/4)\n>> ",
+      "de": "Welche Operation möchten Sie durchführen? (1/2/3/4)\n>> ",
+      "ja": "どの操作を行いますか？(1/2/3/4)\n>> "
+    },
+    "enter_first_number": {
+      "tr": "Birinci sayıyı girin\n>> ",
+      "en": "Enter first number\n>> ",
+      "de": "geben sie die erste Zahl ein\n>> ",
+      "ja": "最初の数値を入力してください\n>> "
+    },
+    "enter_second_number": {
+      "tr": "İkinci sayıyı girin\n>> ",
+      "en": "Enter second number\n>> ",
+      "de": "geben sie die zweite Zahl ein\n>> ",
+      "ja": "二番目の数値を入力してください\n>> "
+    },
+    "result": {
+      "tr": "Sonuç:",
+      "en": "Result:",
+      "de": "Ergebnis:",
+      "ja": "結果: "
+    },
+    "invalid_number": {
+      "tr": "Geçersiz giriş!",
+      "en": "Invalid input!",
+      "de": "Ungültige Eingabe!",
+      "ja": "無効な入力です！"
+    },
+    "zero_division_error": {
+      "tr": "Sıfıra bölme hatası!",
+      "en": "Zero division error!",
+      "de": "eine Zahl kann nicht durch Null geteilt werden!",
+      "ja": "ゼロ除算エラー！"
+    }
+  }
+}
