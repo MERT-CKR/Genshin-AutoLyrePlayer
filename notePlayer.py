@@ -1,7 +1,7 @@
-import json
 import time
 import keyboard
-import os
+import elevate
+elevate.elevate()
 
 
 def timer(function="return-timer"):
@@ -22,7 +22,7 @@ def countDown():
     time.sleep(1)
     print(2)
     time.sleep(1)
-    print(1)
+    print("Starting... ")
 
 numbers = ["0", "1", "2", "3", "4", "5", "6", "7","8", "9", "10", "11", "12", "13", "14", "15","16", "17", "18", "19", "20"][::-1]
 keys =    ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j","z", "x", "c", "v", "b", "n", "m"][::-1]
@@ -45,14 +45,16 @@ def play_music(columns):
                 
 
     timer("start")
+    counter =0
     for key,value in Note_dict.items():
+        counter+=1
         current_time = timer()
         while current_time < key:  # Wait for correct time
             current_time = timer()
             time.sleep(0.0005)
         
         keyboard.send(value)
-        print(value)
+        print(f"{counter}: {value}")
 
         if keyboard.is_pressed('"'):
                 break

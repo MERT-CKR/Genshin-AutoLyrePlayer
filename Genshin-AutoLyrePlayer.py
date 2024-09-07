@@ -4,9 +4,7 @@ import os
 import json
 
 
-
-
-current_directory = "C:\\Users\\56768\\Desktop\\GenshinLyrePlayer0"
+current_directory = os.getcwd()
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
     data = json.load(file)
 
@@ -73,13 +71,18 @@ def specialized_speed(selection):
         print("selected speed: ",selected)
         return selected
     
-    elif selection in ["3","16"]:#normalden biraz hızlılar için yavaşlatma
+    elif selection in ["3","16"]:# normalden biraz hızlılar için yavaşlatma
         selected = [0.12, 0.15, 0.15]
         print("selected speed: ",selected)
         return selected
     
-    elif selection in ["6","17"]:# yavaşlar için hızlandırma
+    elif selection in ["6"]:# yavaşlar için hızlandırma
         selected = [0.08, 0.10, 0.10]
+        print("selected speed: ",selected)
+        return selected
+    
+    elif selection in ["17"]:# çok yavaşlar için hızlandırma
+        selected = [0.06, 0.07, 0.05]
         print("selected speed: ",selected)
         return selected
     
@@ -139,8 +142,12 @@ def showList():
 
 
 while __name__ == "__main__":
+    print("Script is running with admin privileges.")
     showList()
     print(_("restart"))
     keep_continue = input(">> ")
     if keep_continue == "0":
         break
+    else:
+        print("Script is not running with admin privileges. Restarting...")
+    
