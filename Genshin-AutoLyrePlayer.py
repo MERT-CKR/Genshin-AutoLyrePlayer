@@ -12,6 +12,40 @@ current_directory = os.getcwd()
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
     settings = json.load(file)
 
+
+
+
+
+
+translations_path = os.path.join(current_directory, "translations.json")
+
+
+
+def load_translations():
+    if settings["settings"][0]["firstTime"] == 0 or settings["settings"][0]["language"] == "":
+        print("Select your language: \n1.Türkçe \n2.English")
+        lang = int(input(">> "))
+        if lang == 1:
+            user_locale = "tr"
+        elif lang == 2:
+            user_locale = "en"
+
+        settings["settings"][0]["language"] = user_locale
+
+        with open('settings.json', 'w', encoding="utf-8") as dosya:
+            json.dump(settings, dosya, indent=4, ensure_ascii=False)
+    else:
+        user_locale = settings["settings"][0]["language"]
+
+    with open(translations_path, 'r', encoding='utf-8') as f:
+        translations = json.load(f)
+
+    global _
+    _ = lambda key: translations['languages'][key][user_locale]
+
+load_translations()
+
+
 def check_Updates():
     print(_("Checking_updates"))
     current_rel = settings["settings"][0]["version"]
@@ -45,38 +79,11 @@ def check_Updates():
 
 
     
-# check_Updates()
+check_Updates()
 
 
 
 
-translations_path = os.path.join(current_directory, "translations.json")
-
-
-
-def load_translations():
-    if settings["settings"][0]["firstTime"] == 0 or settings["settings"][0]["language"] == "":
-        print("Select your language: \n1.Türkçe \n2.English")
-        lang = int(input(">> "))
-        if lang == 1:
-            user_locale = "tr"
-        elif lang == 2:
-            user_locale = "en"
-
-        settings["settings"][0]["language"] = user_locale
-
-        with open('settings.json', 'w', encoding="utf-8") as dosya:
-            json.dump(settings, dosya, indent=4, ensure_ascii=False)
-    else:
-        user_locale = settings["settings"][0]["language"]
-
-    with open(translations_path, 'r', encoding='utf-8') as f:
-        translations = json.load(f)
-
-    global _
-    _ = lambda key: translations['languages'][key][user_locale]
-
-load_translations()
 if settings["settings"][0]["firstTime"] == 1:
     pass
 else:
@@ -89,8 +96,7 @@ else:
     print(_("tutorial1"))
     print(_("tutorial2"))
 
-    newKeys = int(input(">> "))
-    newKeys = newKeys.replace(",", " ")
+    newKeys = input(">> ")
 
     if newKeys == "":
         settings["settings"][0]["keys"] = settings["settings"][0]["Default_keys"]
