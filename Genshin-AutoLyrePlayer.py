@@ -2,11 +2,52 @@ import columnPlayer
 import notePlayer
 import os
 import json
+import elevate
+import requests
 
+
+elevate.elevate()#run as admin
 
 current_directory = os.getcwd()
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
-    data = json.load(file)
+    settings = json.load(file)
+
+def check_Updates():
+    print(_("Checking_updates"))
+    current_rel = settings["settings"][0]["version"]
+
+    url ="https://raw.githubusercontent.com/MERT-CKR/Genshin-AutoLyrePlayer/main/settings.json"
+    
+    connection =True
+    try:
+        response = requests.get(url,timeout=10)
+    except requests.ConnectionError:
+        print(_("Connection_error"))
+        connection=False
+
+        
+    if connection:
+        try:
+            json_content = response.json()
+            new_rel = json_content["settings"][0]["version"]
+
+
+            if new_rel == current_rel:
+                print(_("using_last_version"))
+                
+            elif new_rel > current_rel:
+                new_ver = _("new_version_available").replace("*current_rel",current_rel).replace("*new_rel",new_rel)
+                print(new_ver)
+                
+        except Exception:
+            print(_("version_could_not_be_checked"))
+            
+
+
+    
+# check_Updates()
+
+
 
 
 translations_path = os.path.join(current_directory, "translations.json")
@@ -14,7 +55,7 @@ translations_path = os.path.join(current_directory, "translations.json")
 
 
 def load_translations():
-    if data["settings"][0]["firstTime"] == 0 or data["settings"][0]["language"] == "":
+    if settings["settings"][0]["firstTime"] == 0 or settings["settings"][0]["language"] == "":
         print("Select your language: \n1.Türkçe \n2.English")
         lang = int(input(">> "))
         if lang == 1:
@@ -22,12 +63,12 @@ def load_translations():
         elif lang == 2:
             user_locale = "en"
 
-        data["settings"][0]["language"] = user_locale
+        settings["settings"][0]["language"] = user_locale
 
         with open('settings.json', 'w', encoding="utf-8") as dosya:
-            json.dump(data, dosya, indent=4, ensure_ascii=False)
+            json.dump(settings, dosya, indent=4, ensure_ascii=False)
     else:
-        user_locale = data["settings"][0]["language"]
+        user_locale = settings["settings"][0]["language"]
 
     with open(translations_path, 'r', encoding='utf-8') as f:
         translations = json.load(f)
@@ -36,12 +77,12 @@ def load_translations():
     _ = lambda key: translations['languages'][key][user_locale]
 
 load_translations()
-if data["settings"][0]["firstTime"] == 1:
+if settings["settings"][0]["firstTime"] == 1:
     pass
 else:
     print(_("first_opening"))
 
-    data["settings"][0]["firstTime"] = 1
+    settings["settings"][0]["firstTime"] = 1
 
     print(_("tutorial3"))
     print(_("tutorial4"))
@@ -52,15 +93,15 @@ else:
     newKeys = newKeys.replace(",", " ")
 
     if newKeys == "":
-        data["settings"][0]["keys"] = data["settings"][0]["Default_keys"]
+        settings["settings"][0]["keys"] = settings["settings"][0]["Default_keys"]
     else:
-        data["settings"][0]["keys"] = newKeys
+        settings["settings"][0]["keys"] = newKeys
 
 with open(os.path.join(current_directory,"settings.json"), "w", encoding="utf-8") as file:
-    json.dump(data, file, indent=4, ensure_ascii=False)
+    json.dump(settings, file, indent=4, ensure_ascii=False)
 
 print(_("key_assigned"))
-key = data["settings"][0]["keys"][::-1]
+key = settings["settings"][0]["keys"][::-1]
 key = key.split()
 
 def specialized_speed(selection):

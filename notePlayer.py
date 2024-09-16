@@ -1,7 +1,21 @@
 import time
 import keyboard
-import elevate
-elevate.elevate()
+
+
+numbers = ["0", "1", "2", "3", "4", "5", "6", "7","8", "9", "10", "11", "12", "13", "14", "15","16", "17", "18", "19", "20"][::-1]
+keys =    ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j","z", "x", "c", "v", "b", "n", "m"][::-1]
+
+
+
+def countDown():
+    print(4)
+    time.sleep(1)
+    print(3)
+    time.sleep(1)
+    print(2)
+    time.sleep(1)
+    print("Starting... ")
+
 
 
 def timer(function="return-timer"):
@@ -15,17 +29,7 @@ def timer(function="return-timer"):
         elapsed_time = time.time() - now 
         return salise + int(elapsed_time * 1000)
     
-def countDown():
-    print(4)
-    time.sleep(1)
-    print(3)
-    time.sleep(1)
-    print(2)
-    time.sleep(1)
-    print("Starting... ")
 
-numbers = ["0", "1", "2", "3", "4", "5", "6", "7","8", "9", "10", "11", "12", "13", "14", "15","16", "17", "18", "19", "20"][::-1]
-keys =    ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j","z", "x", "c", "v", "b", "n", "m"][::-1]
 
 
 def play_music(columns):
