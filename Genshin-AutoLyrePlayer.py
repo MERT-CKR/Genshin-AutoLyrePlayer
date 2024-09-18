@@ -104,37 +104,6 @@ print(_("key_assigned"))
 key = settings["settings"][0]["keys"][::-1]
 key = key.split()
 
-def specialized_speed(selection):
-    selection = str(selection+1)
-    print("selection: ",selection)
-    if selection in ["4","8","11"]:
-        selected = [0.09, 0.11, 0.11]# ideal hız
-        print("selected speed: ",selected)
-        return selected
-    
-    elif selection in ["3","16"]:# normalden biraz hızlılar için yavaşlatma
-        selected = [0.12, 0.15, 0.15]
-        print("selected speed: ",selected)
-        return selected
-    
-    elif selection in ["6"]:# yavaşlar için hızlandırma
-        selected = [0.08, 0.10, 0.10]
-        print("selected speed: ",selected)
-        return selected
-    
-    elif selection in ["17"]:# çok yavaşlar için hızlandırma
-        selected = [0.06, 0.07, 0.05]
-        print("selected speed: ",selected)
-        return selected
-    
-    else:
-        selected = [0.09, 0.11, 0.11]# ideal hız
-        print("selected speed: ",selected)
-        return selected
-
-        
-    
-
 
 musicList = os.listdir(os.path.join(current_directory, "sheets"))
 
