@@ -6,19 +6,14 @@ import elevate
 import requests
 
 
-elevate.elevate()#run as admin
+# elevate.elevate()#run as admin
 
 current_directory = os.getcwd()
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
     settings = json.load(file)
 
 
-
-
-
-
 translations_path = os.path.join(current_directory, "translations.json")
-
 
 
 def load_translations():
@@ -51,7 +46,6 @@ def check_Updates():
     current_rel = settings["settings"][0]["version"]
 
     url ="https://raw.githubusercontent.com/MERT-CKR/Genshin-AutoLyrePlayer/main/settings.json"
-    
     connection =True
     try:
         response = requests.get(url,timeout=10)
@@ -168,12 +162,14 @@ def return_notes(selection):
 
     elif  "columns" in data[0]:
         # dtype = "columns"
-        columnPlayer.playMusic(data[0]["columns"],specialized_speed(selection))
+        bpm = data[0]["bpm"]
+        columnPlayer.play_music(data[0]["columns"],bpm)
+        
 
     else:
-        raise TypeError("unknown format")
+        raise TypeError(_("unknown_format"))
 
-    
+
 
 def showList():
     counter = 0
