@@ -6,7 +6,7 @@ import elevate
 import requests
 
 
-# elevate.elevate()#run as admin
+elevate.elevate()#run as admin
 
 current_directory = os.getcwd()
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
