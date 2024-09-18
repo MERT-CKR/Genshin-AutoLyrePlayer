@@ -1,7 +1,6 @@
 import time
 import keyboard
 
-
 numbers = ["0", "1", "2", "3", "4", "5", "6", "7","8", "9", "10", "11", "12", "13", "14", "15","16", "17", "18", "19", "20"][::-1]
 keys =    ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j","z", "x", "c", "v", "b", "n", "m"][::-1]
 
@@ -14,21 +13,21 @@ def countDown():
     time.sleep(1)
     print(2)
     time.sleep(1)
-    print("Starting... ")
+    print("Starting...")
 
 
 
-def timer(function="return-timer"):
+def timer(function=0):
     global salise
     global now
-    if function == "start":
+    if function == 1:
         now = time.time()
         salise = int((now - int(now)) * 1000)
 
     else:
-        elapsed_time = time.time() - now 
+        elapsed_time = time.time() - now
         return salise + int(elapsed_time * 1000)
-    
+
 
 
 
@@ -48,7 +47,7 @@ def play_music(columns):
                 Note_dict[key] = keys[x]
                 
 
-    timer("start")
+    timer(1)
     counter =0
     for key,value in Note_dict.items():
         counter+=1
