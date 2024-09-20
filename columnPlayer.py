@@ -46,6 +46,7 @@ def play_music(sheets,bpm):
             if len(replaced_elements) > 1:
                 for char in replaced_elements:
                     keyboard.press_and_release(char)
+                time.sleep(wait)
             else:
                 keyboard.press_and_release(replaced_elements[0])
                 time.sleep(wait)
