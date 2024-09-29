@@ -61,7 +61,7 @@ For example, if you focus on a text document, it will type there. Therefore, mak
 
 
 * ### If you don't have sheets
-    * You can find sheets in this Discord chanel: [Sky & Genshin Music Nightly](https://discord.ggArsf65YYHq)
+    * You can find sheets in this Discord chanel: [Sky & Genshin Music Nightly](https://discord.com/invite/Arsf65YYHq)
         ### When you download the sheet music first check the extension of the file.
         #### Is your extension  `.genshinsheet`?
         * then you can use it directly.
