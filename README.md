@@ -1,9 +1,9 @@
-#### Other Languages: [Türkçe]()
+#### Other Languages: [Türkçe](https://github.com/MERT-CKR/Genshin-AutoLyrePlayer/blob/main/README-TR.md)
 
 ---
 ## This application is designed to automatically play instruments in the game "Genshin Impact" on Windows platform.
 
-## 👁 it on Youtube ↓
+## Watch it on Youtube👁️ ↓
 [![watch on YT](https://i3.ytimg.com/vi/gg87Hzbvlx4/maxresdefault.jpg)](https://www.youtube.com/watch?v=gg87Hzbvlx4)
 
 
@@ -55,18 +55,20 @@ For example, if you focus on a text document, it will type there. Therefore, mak
 
 ## How to add other sheet musics to the list?
 
+* ### If you don't have sheets
+    * You can find sheets in this Discord chanel: [Sky & Genshin Music Nightly](https://discord.ggArsf65YYHq)
+
 * ### If you already have sheets 
     * Just copy them `Sheets` folder
-    * Ensure your file includes only 1 layer to play
+    * Ensure your file include only 1 layer to play
+### Usage of Sheets
 
+### When you download the sheet music first check the extension of the file.
 
-* ### If you don't have sheets
-    * You can find sheets in this Discord chanel: [Sky & Genshin Music Nightly](https://discord.com/invite/Arsf65YYHq)
-        ### First check the extension of the file When you downloaded the sheet music.
-        #### Is your extension  `.genshinsheet`?
-        * then you can use it directly.
-        #### Is your extension  `.skysheet`?
-        * just upload [Genshin Music Nightly](https://specy.github.io/genshinMusic) and download it again
+#### Is your extension  `.genshinsheet`?
+* This is supported format you can use it by copying it to the `sheets` folder
+#### Is your extension  `.skysheet`?
+* just upload [Genshin Music Nightly](https://specy.github.io/genshinMusic) and download it again, then copy it to `sheets` folder.
 
 
 * ### Supported Sheet formats
