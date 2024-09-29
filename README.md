@@ -1,4 +1,4 @@
-#### Other Languages: [Türkçe](https://github.com/MERT-CKR/Sky-Instrument-Player/blob/main/README-TR.md)
+#### Other Languages: [Türkçe]()
 
 ---
 ## This application is designed to automatically play instruments in the game "Genshin Impact" on Windows platform.
