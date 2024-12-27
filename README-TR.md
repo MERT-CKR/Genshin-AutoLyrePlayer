@@ -15,6 +15,7 @@
 * elevate 
 * keyboard
 * requests
+* pygame
 
 
 Bu kütüphaneleri komut satırı arayüzünde(CMD) aşağıdaki komutları kullanarak yükleyin:
@@ -29,6 +30,10 @@ pip install keyboard
 
 ```cmd
 pip install requests
+```
+
+```cmd
+pip install pygame
 ```
 
 ## Kullanım:
