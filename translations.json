@@ -105,8 +105,8 @@
       "en":"You are already using the latest version.\n"
     },
     "new_version_available":{
-      "tr":"Yeni versiyon bulundu! Kullandığın versiyon: *current_rel Yeni versiyon: *new_rel \nBuradan güncelleyin: \n>> https://github.com/MERT-CKR/Genshin-AutoLyrePlayer \nCode>Download ZIP (eski notalarını kaybetmemek için eski programdaki Sheet ve new sheet klasörlerini alabilirsiniz)!!! \n",
-      "en":"New version available! your version: *current_rel New version: *new_rel \nUpdate from here: \n>> https://github.com/MERT-CKR/Genshin-AutoLyrePlayer \nCode>Download ZIP (To avoid losing old notes, you can import Sheet and new sheet folders from the old program)!!! \n"
+      "tr":"\n\nYeni versiyon bulundu!!! Kullandığın versiyon: *current_rel Yeni versiyon: *new_rel \nBuradan güncelleyin: \n>> https://github.com/MERT-CKR/Genshin-AutoLyrePlayer \nCode>Download ZIP (eski notalarını kaybetmemek için eski programdaki Sheet ve new sheet klasörlerini alabilirsiniz)!!! \n",
+      "en":"\n\nNew version available!!! your version: *current_rel New version: *new_rel \nUpdate from here: \n>> https://github.com/MERT-CKR/Genshin-AutoLyrePlayer \nCode>Download ZIP (To avoid losing old notes, you can import Sheet and new sheet folders from the old program)!!! \n"
     },
     "version_could_not_be_checked":{
       "tr":"Güncelleme kontrol edilirken bir sorun oluştu.",
@@ -115,6 +115,10 @@
     "unknown_format": {
       "tr": "'notes veya columns' anahtarı dosyasında bulunamadı, yanlış veya hatalı dosya olabilir!!",
       "en": ": There aren't 'notes or columns' key in file. Invalid file content!!"
+    },
+    "changelog": {
+      "tr":"Sürüm Notları: \n",
+      "en":"Changelog: \n"
     }
   }
 }

@@ -15,6 +15,7 @@ new_data = {
             "example": "q w e r t y u a s d f g h j z x c v b n m",
             "language": "",
             "keys": "q w e r t y u a s d f g h j z x c v b n m",
+            "change_log": "",
             "version": version
         }
     ]
