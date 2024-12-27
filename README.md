@@ -14,6 +14,7 @@
 * elevate
 * keyboard
 * requests
+* pygame
 
 paste the fallowing codes to your terminal (CMD)
 
@@ -27,6 +28,10 @@ pip install keyboard
 
 ```cmd
 pip install requests
+```
+
+```cmd
+pip install pygame
 ```
 
 ## Usage:
