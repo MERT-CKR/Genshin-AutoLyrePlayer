@@ -7,13 +7,13 @@ import requests
 import random
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-from pygame import mixer,time as pytime
+from pygame import mixer, time as pytime
 
 elevate.elevate()#run as admin
 
 current_directory = os.getcwd()
 
-
+sfx = False
 def speak(mode, sfx):
     if sfx:
         path = os.path.join(current_directory,"sounds",mode)
@@ -32,7 +32,7 @@ def speak(mode, sfx):
 
 
 
-speak("initialize",True)
+speak("initialize", sfx)
 
 
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
@@ -76,9 +76,9 @@ def check_Updates():
     try:
         response = requests.get(url,timeout=4)
     except requests.ConnectionError:
-        speak("error", True)
+        speak("error", sfx)
         print(_("connection_error"))
-        connection=False
+        connection = False
 
         
     if connection:
@@ -97,8 +97,9 @@ def check_Updates():
                 if changelog !="":
                     print(_("changelog"), changelog)
                 
-        except Exception:
+        except Exception as e:
             speak("error", sfx)
+            print(e)
             print(_("version_could_not_be_checked"))
             
 
@@ -176,7 +177,7 @@ def return_notes(selection):
     elif  "columns" in data[0]:
         # file type = "columns"
         bpm = data[0]["bpm"]
-        columnPlayer.play_music(data[0]["columns"],bpm, sfx)
+        columnPlayer.play_music(data[0]["columns"], bpm, sfx)
         
 
     else:
