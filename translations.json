@@ -89,8 +89,8 @@
       "en": "A problem occurred while adding to the preloaded music library."
     },
     "restart": {
-      "tr": "Programı yeniden başlatmak için 1'e basın:\nÇıkmak için ise herhangi bir tuşa basın\n",
-      "en": "Press 1 to restart the program \nPress any key to exit\n"
+      "tr": "Devam etmek için Enter'e basın:\nÇıkmak için 0'a basın\n",
+      "en": "Press Enter to continue \nPress 0 to exit\n"
     },
     "Checking_updates":{
       "tr":"Güncellemeler kontrol ediliyor...",
@@ -119,6 +119,11 @@
     "changelog": {
       "tr":"Sürüm Notları: \n",
       "en":"Changelog: \n"
+    },
+    "close_sound": {
+      "tr":"Scriptin seslerini kapatmak istermisiniz ? \n1 Evet \n2 Hayır",
+      "en":"Would you like to turn off the sounds of the script? \n1 Yes \n2 No"
     }
+
   }
 }

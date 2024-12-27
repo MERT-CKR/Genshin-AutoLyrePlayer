@@ -32,7 +32,7 @@ def speak(mode, sfx):
 
 
 
-speak("initialize", sfx)
+speak("initialize", True)
 
 
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
@@ -109,7 +109,7 @@ check_Updates()
 
 def sound():
     global sfx
-    print("Scriptin seslerini kapatmak istermisiniz ? \n1 Evet \n2 Hayır")
+    print(_("close_sound"))
     try:
         sfx = int(input(">> "))
         if sfx not in [1,2]:

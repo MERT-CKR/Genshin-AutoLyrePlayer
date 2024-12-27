@@ -49,7 +49,7 @@ def select_window(sfx):
     windows = gw.getAllTitles()
     windows = list(set(windows))
     windows = [win for win in windows if win != ""] # Remove empty list elements
-    windows = [win for win in windows if "Genshin-AutoLyrePlayer.py" not in win] # remove itself from list
+    windows = [win for win in windows if "Genshin-AutoLyrePlayer" not in win] # remove itself from list
 
     recommended = ["Genshin", "Oynatıcı", "Player"]  # windows where these phrases appear
 
@@ -87,14 +87,13 @@ def select_window(sfx):
             target = related_windows[choise-1]
             window = gw.getWindowsWithTitle(target)[0]
         
-            print("give focus")
+            print("give focus to the window you selected")
             while gw.getActiveWindowTitle() != target:
-                time.sleep(1)
-                print(gw.getActiveWindowTitle(),target)
+                time.sleep(0.5)
             speak("focused",sfx)
 
 
-tempo_dict={
+tempo_dict = {
     0:1,
     1:2,
     2:4,
