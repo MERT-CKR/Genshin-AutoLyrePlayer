@@ -101,8 +101,8 @@
       "en":"Connection error"
     },
     "using_last_version":{
-      "tr":"Zaten son sürümü kullanıyorsunuz.",
-      "en":"You are already using the latest version"
+      "tr":"Zaten son sürümü kullanıyorsunuz.\n",
+      "en":"You are already using the latest version.\n"
     },
     "new_version_available":{
       "tr":"Yeni versiyon bulundu! Kullandığın versiyon: *current_rel Yeni versiyon: *new_rel \nBuradan güncelleyin: \n>> https://github.com/MERT-CKR/Genshin-AutoLyrePlayer \nCode>Download ZIP (eski notalarını kaybetmemek için eski programdaki Sheet ve new sheet klasörlerini alabilirsiniz)!!! \n",

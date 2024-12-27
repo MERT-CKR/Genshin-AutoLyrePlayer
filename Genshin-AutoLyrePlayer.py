@@ -4,11 +4,37 @@ import os
 import json
 import elevate
 import requests
+import random
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+from pygame import mixer,time as pytime
 
 elevate.elevate()#run as admin
 
 current_directory = os.getcwd()
+
+
+def speak(mode, sfx):
+    if sfx:
+        path = os.path.join(current_directory,"sounds",mode)
+        options = os.listdir(path)
+        choise = random.choice(options)
+        choise = os.path.join(path,choise)
+    
+        mixer.init()
+        mixer.music.load(choise)
+        mixer.music.play()
+        
+        
+        while mixer.music.get_busy():
+            pytime.Clock().tick(10)
+        mixer.quit()
+
+
+
+speak("initialize",True)
+
+
 with open(os.path.join(current_directory,"settings.json"), "r", encoding="utf-8") as file:
     settings = json.load(file)
 
@@ -48,9 +74,10 @@ def check_Updates():
     url ="https://raw.githubusercontent.com/MERT-CKR/Genshin-AutoLyrePlayer/main/settings.json"
     connection =True
     try:
-        response = requests.get(url,timeout=10)
+        response = requests.get(url,timeout=3)
     except requests.ConnectionError:
-        print(_("Connection_error"))
+        speak("error", True)
+        print(_("connection_error"))
         connection=False
 
         
@@ -68,6 +95,7 @@ def check_Updates():
                 print(new_ver)
                 
         except Exception:
+            speak("error", sfx)
             print(_("version_could_not_be_checked"))
             
 
@@ -75,7 +103,23 @@ def check_Updates():
     
 check_Updates()
 
+def sound():
+    global sfx
+    print("Scriptin seslerini kapatmak istermisiniz ? \n1 Evet \n2 Hayır")
+    try:
+        sfx = int(input(">> "))
+        if sfx not in [1,2]:
+            raise ValueError
+        
+        if sfx == 1:
+            sfx = False
 
+        else:
+            sfx = True
+    except:
+        speak("error", sfx)
+        sound()
+sound()
 
 
 if settings["settings"][0]["firstTime"] == 1:
@@ -115,9 +159,6 @@ keys =    ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j",
 musicDict = {}
 
 def return_notes(selection):
-    if selection > len(musicList) or selection <=0:
-            showList()
-            return
 
     selection -= 1
     
@@ -126,21 +167,24 @@ def return_notes(selection):
         data = json.load(data)
 
     if  "notes" in data[0]:
-        # dtype = "notes"
-        notePlayer.play_music(data[0]["notes"])
+        # file type = "notes"
+        notePlayer.play_music(data[0]["notes"], sfx)
 
     elif  "columns" in data[0]:
-        # dtype = "columns"
+        # file type = "columns"
         bpm = data[0]["bpm"]
-        columnPlayer.play_music(data[0]["columns"],bpm)
+        columnPlayer.play_music(data[0]["columns"],bpm, sfx)
         
 
     else:
+        speak("error", sfx)
         raise TypeError(_("unknown_format"))
+        
 
 
 
 def showList():
+    speak("searching", sfx)
     counter = 0
     for x in musicList:
         ext = x.split(".")[1]
@@ -149,8 +193,15 @@ def showList():
         print(counter, x)
         
     selection = int(input("choose from list\n>> "))
+
+    if selection > len(musicList) or selection <=0:
+        speak("error", sfx)
+        showList()
+        return
+    
     return_notes(selection)
 
+    
 
 
 while __name__ == "__main__":
@@ -159,6 +210,7 @@ while __name__ == "__main__":
     print(_("restart"))
     keep_continue = input(">> ")
     if keep_continue == "0":
+        speak("close app", sfx)
         break
     else:
         print("Script is not running with admin privileges. Restarting...")
