@@ -96,8 +96,8 @@ def check_Updates():
                 print(new_ver)
 
                 if changelog != "":
-                    print(_("changelog"), changelog)
-                
+                    print(_("changelog"))
+                    print(changelog)
         except Exception as e:
             speak("error", sfx)
             print(e)
