@@ -1,13 +1,13 @@
 {
     "settings": [
         {
-            "firstTime": 1,
+            "firstTime": 0,
             "Default_keys": "q w e r t y u a s d f g h j z x c v b n m",
-            "example": "q w e r t y u a s d f g h j z x c v b n m",
-            "language": "en",
-            "keys": "q w e r t y u a s d f g h j z x c v b n m",
-            "changelog": "",
-            "version": "1.4"
+            "language": "",
+            "keys": "",
+            "change_log": "",
+            "version": "1.5",
+            "talk_mode": 0
         }
     ]
 }

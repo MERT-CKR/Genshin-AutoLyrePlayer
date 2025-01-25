@@ -5,28 +5,20 @@
       "en":"Invalid prompt. Please Try again"
     },
     "tutorial1": {
-      "tr": "Genshin'de enstrümanını kuşandığında tuşların üzerindeki harfleri sırayla buraya yaz.",
-      "en": "When you equip your instrument in Genshin, enter the letters on the buttons here in order."
+      "tr": "Genshin'de enstrümanını kuşandığında tuşların üzerindeki harfleri sırayla buraya yaz.\nNot: Sadece 21 tuşlu enstrümanları kullanabilirsin.",
+      "en": "When you equip your instrument in Genshin, enter the letters on the buttons here in order.\nNote: You can only use 21-button instruments."
     },
     "tutorial2": {
-      "tr": "Örn.: q w e r t y u a s d f g h j z x c v b n m",
-      "en": "E.g.: q w e r t y u a s d f g h j z x c v b n m"
-    },
-    "tutorial3": {
-      "tr": "Not: Sadece 21 tuşlu enstrümanları kullanabilirsin.",
-      "en": "Note: You can only use 21-button instruments."
-    },
-    "tutorial4": {
-      "tr": "Eğer bu alana gireceğin tuşlar arasında '.' karakteri varsa, onu Ayarlar>Kontroller'den başka bir tuşla değiştir (öneri: b). Aksi takdirde, o tuşa basılmaz.",
-      "en": "If one of the letters on the buttons contains '.', change it to another key from Settings>Controls (suggestion: b). Otherwise, that button will not be pressed."
+      "tr": "Örn.: q w e r t y u a s d f g h j z x c v b n m\nDirek bu tuşları kullanmak için Enter'a basın.",
+      "en": "E.g.: q w e r t y u a s d f g h j z x c v b n m\nPress Enter to use these keys directly."
     },
     "first_opening": {
       "tr": "İlk açılış algılandı.",
       "en": "First opening detected."
     },
     "key_assigned": {
-      "tr": "Tuş ataması tamamlandı.",
-      "en": "Key assignment completed."
+      "tr": "Tuş ataması tamamlandı.\n",
+      "en": "Key assignment completed.\n"
     },
     "starting": {
       "tr": "Başlıyor...",
@@ -35,34 +27,6 @@
     "loop_ending": {
       "tr": "\" Tuşuna basıldı, döngü sonlandırılıyor.",
       "en": "\" Key is pressed, loop is getting end."
-    },
-    "wait": {
-      "tr": "Bekle",
-      "en": "Wait"
-    },
-    "play_time": {
-      "tr": "Çalma süresi (sn):",
-      "en": "Playback duration (sec):"
-    },
-    "play_speed": {
-      "tr": "Oynatma hızını giriniz (1, 2, 3, 4, 5). (1 hızlı, 5 yavaş)\nÖneri: 3",
-      "en": "Enter play speed as (1, 2, 3, 4, 5). (1 fast, 5 slow)\nSuggestion: 3"
-    },
-    "invalid_play_speed": {
-      "tr": "Yanlış bir değer girdiniz, hız 3 olarak ayarlandı.",
-      "en": "You entered a wrong value, speed adjusted to 3."
-    },
-    "speed_adjusted": {
-      "tr": "Hız ayarlandı:",
-      "en": "Speed adjusted:"
-    },
-    "do_you_have_sheets": {
-      "tr": "Notaları buraya girin, eğer notanız yoksa 0'a basın:",
-      "en": "Enter sheet music here. If you don't have any, press 0:"
-    },
-    "choose_preloaded_music": {
-      "tr": "Hazır müziklerden seçin:\n",
-      "en": "Choose from preloaded music:\n"
     },
     "wrong_char":{
       "tr":"Notalar geçersiz karakter içeriyor: ",
@@ -76,9 +40,9 @@
       "tr":"Bilinmeyen bir hata oluştu ",
       "en":"An unknown error occurs: "
     },
-    "enter_music_name": {
-      "tr": "Bu müziğin adını girin:\n",
-      "en": "Enter the name of this music:\n"
+    "choose_music": {
+      "tr": "\nListeden seçin\n>> ",
+      "en": "\nChoose from list\n>> "
     },
     "added_to_preloaded_library": {
       "tr": "Hazır müzik kütüphanesine eklendi.",
@@ -123,7 +87,26 @@
     "close_sound": {
       "tr":"Scriptin seslerini kapatmak istermisiniz ? \n1 Evet \n2 Hayır",
       "en":"Would you like to turn off the sounds of the script? \n1 Yes \n2 No"
+    },
+    "focus_lost": {
+      "tr":"Pencere odağı kaybedildi!! Müzik durduruldu\n",
+      "en":"Window Focus lost!! Music stopped\n"
+    },
+    "playback_duration": {
+      "tr":"Çalma süresi * saniye",
+      "en":"Playback duration * second"
+    },
+    "talking_script":{
+      "tr":"Konuşan Script modunu açmak istermisiniz? \n1 Evet \n2 Hayır",
+      "en":"Would you like to enable Talking Script mode? \n1 Yes \n2 No"
+    },
+    "select_window":{
+      "tr":"\nOdaklamak istediğiniz pencereyi seçin\n0 Pencere seçmeden devam et",
+      "en":"\nSelect the window you want to focus on\n0 Continue without select window"
+    },
+    "give_focus":{
+      "tr":"Seçtiğiniz pencereye odak verin",
+      "en":"Give focus to the window you selected"
     }
-
   }
 }

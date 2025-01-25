@@ -2,95 +2,17 @@ import time
 import keyboard
 import pygetwindow as gw
 import os
-import random
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-from pygame import mixer,time as pytime
+from common import load_translations, speak
+from common import select_window
+import common
+_ = load_translations()
 
+
+numbers = common.numbers
+keys = common.keys
 
 current_directory = os.getcwd()
 
-
-def speak(say,sfx):
-    if sfx:
-        path = os.path.join(current_directory,"sounds",say)
-        options = os.listdir(path)
-        choise = random.choice(options)
-        choise = os.path.join(path,choise)
-    
-        mixer.init()
-        mixer.music.load(choise)
-        mixer.music.play()
-        
-        
-        while mixer.music.get_busy():
-            pytime.Clock().tick(10)
-        mixer.quit()
-
-
-
-
-numbers = ["0", "1", "2", "3", "4", "5", "6", "7","8", "9", "10", "11", "12", "13", "14", "15","16", "17", "18", "19", "20"][::-1]
-keys =    ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j","z", "x", "c", "v", "b", "n", "m"][::-1]
-
-
-
-def countDown():
-    print(4)
-    time.sleep(1)
-    print(3)
-    time.sleep(1)
-    print(2)
-    time.sleep(1)
-    print("Starting... ")
-
-
-def select_window(sfx):
-    global target
-    windows = gw.getAllTitles()
-    windows = list(set(windows))
-    windows = [win for win in windows if win != ""] # Remove empty list elements
-    windows = [win for win in windows if "Genshin-AutoLyrePlayer" not in win] # remove itself from list
-
-    recommended = ["Genshin", "Oynatıcı", "Player"]  # windows where these phrases appear
-
-    related_windows = []
-
-    for window in windows:
-        for recommend in recommended:
-            if recommend in window:
-                related_windows.append(window)
-
-
-    if related_windows == []:
-        window = 0
-        target = None
-        
-    else:
-        counter = 0
-        print("\nSelect the window you want to focus on")
-        print("0 Continue without selection")
-        for i in range(len(related_windows)):
-            counter+=1
-            print(counter,related_windows[i])
-        try:
-            choise = int(input(">> "))
-        except:
-            speak("error",sfx)
-            select_window()
-            return
-        
-        if choise == 0:
-            target = None
-            return countDown()
-        
-        else:
-            target = related_windows[choise-1]
-            window = gw.getWindowsWithTitle(target)[0]
-        
-            print("give focus to the window you selected")
-            while gw.getActiveWindowTitle() != target:
-                time.sleep(0.5)
-            speak("focused",sfx)
 
 
 tempo_dict = {
@@ -102,15 +24,15 @@ tempo_dict = {
 
 
 
-def play_music(sheets,bpm,sfx):
+def play_music(sheets, bpm, sfx):
     global replaced_elements
+    target = select_window(sfx)
 
-    print("bpm",bpm)#bpm: beats per minute | bps: peats per second
+
+    print("bpm", bpm)#bpm: beats per minute | bps: peats per second
     bps = bpm/60
     # bps -= bps *-0.10 # %10 play speed
     wait = 1/bps
-    
-    select_window(sfx)
     t1 = time.time()
     
     for i in sheets:
@@ -118,24 +40,40 @@ def play_music(sheets,bpm,sfx):
         wait_among_notes = wait/tempo
         
         if i[1] == []:
-            replaced_elements = "Empty Page"
+            replaced_elements = "Empty Column"
         else:
+            
             first_elements = [item[0] for item in i[1]]
-            replaced_elements = [keys[numbers.index(str(elem))] if str(elem) in numbers else str(elem) for elem in first_elements]
+            replaced_elements = []
+            for item in first_elements:
+                item = str(item)
+                index = numbers.index(item)
+                replaced = item.replace(numbers[index], keys[index])
+                replaced_elements.append(replaced)
+                
+        
 
-        print(f"{replaced_elements} Tempo: {tempo}")
-        print("-----------")
+        if replaced_elements == "Empty Column":
+            # print(replaced_elements)
+            # print("-----------")
+            print("\n")
+        else:
+            print(f"{replaced_elements} Tempo: {tempo}")
+           
 
         if keyboard.is_pressed('"'):
-            print("loop ending")
+            print(_("loop_ending"))
             break
         
         if target != None:
             if gw.getActiveWindowTitle() != target:
-                speak("focus lost",sfx)
+                speak("focus lost", sfx)
+                if not sfx:
+                    print(_("focus_lost"))
                 break
 
-        if "Empty Page" not in replaced_elements  :
+
+        if "Empty Column" not in replaced_elements:
             if len(replaced_elements) > 1:
                 for char in replaced_elements:
                     keyboard.press_and_release(char)
@@ -146,5 +84,5 @@ def play_music(sheets,bpm,sfx):
         else:
             time.sleep(wait_among_notes)
     t2=time.time()
-    playtime = round(t2-t1,1)
-    print("playback duration",playtime,"second")
+    playtime = round(t2-t1, 1)
+    print(_("playback_duration").replace("*", str(playtime)))
