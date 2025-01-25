@@ -1,10 +1,10 @@
 {
     "settings": [
         {
-            "firstTime": 1,
+            "firstTime": 0,
             "Default_keys": "q w e r t y u a s d f g h j z x c v b n m",
-            "language": "tr",
-            "keys": "q w e r t y u a s d f g h j z x c v b n m",
+            "language": "",
+            "keys": "",
             "changelog": "Important update!!! \nGeneral improvements \nModular programming implemented \nFile names corrected \nTranslations improved \nMinor bugs fixed",
             "version": "1.5",
             "talk_mode": 0
