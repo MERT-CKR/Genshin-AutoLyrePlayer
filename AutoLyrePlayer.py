@@ -85,6 +85,7 @@ def check_Updates():
         try:
             json_content = response.json()
             new_rel = json_content["settings"][0]["version"]
+           
             changelog = json_content["settings"][0]["changelog"]
 
             if new_rel == current_rel:
@@ -93,6 +94,7 @@ def check_Updates():
             elif new_rel > current_rel:
                 new_ver = _("new_version_available").replace("*current_rel", current_rel).replace("*new_rel", new_rel)
                 print(new_ver)
+
                 if changelog != "":
                     print(_("changelog"), changelog)
                 
