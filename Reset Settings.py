@@ -1,11 +1,14 @@
-import json
-from pandas import read_json
+import os
 import time
+import json
 
-settings = read_json("settings.json")
-version = settings["settings"][0]["version"]
+current_dir = os.path.dirname(os.path.realpath(__file__))
+settings_dir = os.path.join(current_dir, "settings.json")
 
-#get version from settings
+with open(settings_dir, "r", encoding = "utf-8") as settings:
+    settings = json.load(settings)
+    version = settings["settings"][0]["version"]#get version from settings
+    
 
 new_data = {
     "settings": [
@@ -16,14 +19,13 @@ new_data = {
             "keys": "",
             "changelog": "",
             "version": version,
-            "talk_mode": 0
         }
     ]
 }
 
 
-with open("settings.json", "w", encoding="utf-8") as file:
-    json.dump(new_data, file, indent=4, ensure_ascii=False)
+with open(settings_dir, "w", encoding = "utf-8") as old_settings:
+    json.dump(new_data, old_settings, indent = 4, ensure_ascii = False)
 
 print("key rest successfull.")
-time.sleep(1.5)
+time.sleep(1.25)

@@ -1,82 +1,108 @@
 import os
 import json
 import requests
-import elevate
-elevate.elevate()#run as admin
-# Required to be able to press keys in Genshin Impact running as admin.
+import sys
+import ctypes
+import subprocess
 
 
-current_directory = os.getcwd()
-with open(os.path.join(current_directory, "settings.json"), "r", encoding="utf-8") as file:
+# Genshin impact is running as an Administrator so only applications running as an Administrator can interact with it.
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+if not is_admin():
+    script_path = os.path.abspath(sys.argv[0])
+    
+    # Run Windows Terminal as admin
+    subprocess.run([
+        "powershell", "-Command",
+        f"Start-Process wt -ArgumentList '-w 0 nt -p \"PowerShell\" -- python \"{script_path}\"' -Verb RunAs"
+    ])
+    sys.exit()
+
+
+
+current_directory = os.path.dirname(os.path.realpath(__file__))
+settings_path = os.path.join(current_directory, "settings.json")
+                             
+with open(settings_path, "r", encoding = "utf-8") as file:
     settings = json.load(file)
+    settings = settings["settings"][0]
+    
+    
 
-user_locale = settings["settings"][0]["language"]
-if user_locale not in ["tr","en"]:
+user_locale = settings["language"]
+
+lang_dict = {
+    "1" : "tr",
+    "2" : "en"
+}
+
+supported_languages = lang_dict.values()
+supported_lang_index = lang_dict.keys()
+
+
+if user_locale not in supported_languages:
     print("Select your language: \n1.Türkçe \n2.English")
-    lang = int(input(">> "))
-    if lang == 1:
-        user_locale = "tr"
-    elif lang == 2:
-        user_locale = "en"
 
-    settings["settings"][0]["language"] = user_locale
-       
+    input_lang_index = input(">> ")
+    
+    if input_lang_index in supported_lang_index:
+        selected_lang = lang_dict[input_lang_index]
 
-    with open('settings.json', 'w', encoding="utf-8") as dosya:
-        json.dump(settings, dosya, indent=4, ensure_ascii=False)
-        
+        if selected_lang in supported_languages:
+            user_locale = selected_lang
+
+    else:
+        raise ValueError(f"Language not selected \nOptions are only 1 and 2 !!!")
+    
+
+    settings["language"] = user_locale   
+    
+
+    with open(settings_path, 'w', encoding = "utf-8") as old_file:
+        json.dump({"settings": [settings]}, old_file, indent = 4, ensure_ascii = False)
 
 
 import ColumnPlayer
 import NotePlayer
-from common import load_translations, speak
+from common import load_translations
 
 _ = load_translations()
 
-if settings["settings"][0]["firstTime"] != 1:
+if settings["firstTime"] != 1:
     #first_opening
-    settings["settings"][0]["firstTime"] = 1
+    settings["firstTime"] = 1
     print(_("tutorial1"))
     print(_("tutorial2"))
 
-    newKeys = input(">> ")
 
-    print(_("talking_script"))
-    talk_mode = int(input(">> "))
-
-    if talk_mode == 1:
-        settings["settings"][0]["talk_mode"] = 1
+    new_keys = input(">> ")
+    if new_keys == "":
+        settings["keys"] = settings["Default_keys"]
 
     else:
-        settings["settings"][0]["talk_mode"] = 0
+        settings["keys"] = new_keys
 
-    if newKeys == "":
-        settings["settings"][0]["keys"] = settings["settings"][0]["Default_keys"]
-
-    else:
-        settings["settings"][0]["keys"] = newKeys
-
-    with open('settings.json', 'w', encoding="utf-8") as dosya:
-        json.dump(settings, dosya, indent=4, ensure_ascii=False)
+    with open(settings_path, 'w', encoding = "utf-8") as old_settings:
+        json.dump({"settings": [settings]}, old_settings, indent = 4, ensure_ascii = False)
 
     print(_("key_assigned"))
 
 
 
-sfx = settings["settings"][0]["talk_mode"]
-speak("initialize", sfx)
-
-
 def check_Updates():
     print(_("Checking_updates"))
-    current_rel = settings["settings"][0]["version"]
+    current_rel = settings["version"]
 
-    url ="https://raw.githubusercontent.com/MERT-CKR/Genshin-AutoLyrePlayer/main/settings.json"
+    url = "https://raw.githubusercontent.com/MERT-CKR/Genshin-AutoLyrePlayer/main/settings.json"
     connection = True
     try:
         response = requests.get(url, timeout=4)
     except requests.ConnectionError:
-        speak("error", sfx)
         print(_("connection_error"))
         connection = False
 
@@ -84,9 +110,9 @@ def check_Updates():
     if connection:
         try:
             json_content = response.json()
-            new_rel = json_content["settings"][0]["version"]
-           
-            changelog = json_content["settings"][0]["changelog"]
+            json_content = json_content["settings"][0]
+            new_rel = json_content["version"]
+            changelog = json_content["changelog"]
 
             if new_rel == current_rel:
                 print(_("using_last_version"))
@@ -98,44 +124,39 @@ def check_Updates():
                 if changelog != "":
                     print(_("changelog"))
                     print(changelog)
-        except Exception as e:
-            speak("error", sfx)
-            print(e)
+            else:
+                print("Developing")
+        except Exception as err:
+            print(err)
             print(_("version_could_not_be_checked"))
             
 check_Updates()
 
 
-
-
-
 musicList = os.listdir(os.path.join(current_directory, "sheets"))
 musicDict = {}
 
+# Determine the note type and send sheets to player
 def return_notes(selection):
     selection -= 1
     musicDict[selection] = musicList[selection]
-    with open(os.path.join(current_directory, "sheets", musicList[selection]), "r", encoding="UTF-8") as data:
+    with open(os.path.join(current_directory, "sheets", musicList[selection]), "r", encoding = "UTF-8") as data:
         data = json.load(data)
 
     if  "notes" in data[0]:
         # file type = "notes"
-        NotePlayer.play_music(data[0]["notes"], sfx)
+        NotePlayer.play_music(data[0]["notes"])
 
     elif  "columns" in data[0]:
         # file type = "columns"
         bpm = data[0]["bpm"]
-        ColumnPlayer.play_music(data[0]["columns"], bpm, sfx)
+        ColumnPlayer.play_music(data[0]["columns"], bpm)
         
     else:
-        speak("error", sfx)
         raise TypeError(_("unknown_format"))
         
-
-
-
+# Show user music list
 def showList():
-    speak("searching", sfx)
     counter = 0
     for x in musicList:
         ext = x.split(".")[1]
@@ -145,8 +166,7 @@ def showList():
         
     selection = int(input(_("choose_music")))
     
-    if selection > len(musicList) or selection <=0:
-        speak("error", sfx)
+    if selection > len(musicList) or selection <= 0:
         showList()
         return
     
@@ -159,6 +179,5 @@ while __name__ == "__main__":
     print(_("restart"))
     keep_continue = input(">> ")
     if keep_continue == "0":
-        speak("close app", sfx)
         break
     

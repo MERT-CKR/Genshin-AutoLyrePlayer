@@ -1,9 +1,5 @@
 {
   "languages": {
-    "invalid_prompt":{
-      "tr":"Hatalı giriş. Lütfen tekrar deneyin.",
-      "en":"Invalid prompt. Please Try again"
-    },
     "tutorial1": {
       "tr": "Genshin'de enstrümanını kuşandığında tuşların üzerindeki harfleri sırayla buraya yaz.\nNot: Sadece 21 tuşlu enstrümanları kullanabilirsin.",
       "en": "When you equip your instrument in Genshin, enter the letters on the buttons here in order.\nNote: You can only use 21-button instruments."
@@ -11,10 +7,6 @@
     "tutorial2": {
       "tr": "Örn.: q w e r t y u a s d f g h j z x c v b n m\nDirek bu tuşları kullanmak için Enter'a basın.",
       "en": "E.g.: q w e r t y u a s d f g h j z x c v b n m\nPress Enter to use these keys directly."
-    },
-    "first_opening": {
-      "tr": "İlk açılış algılandı.",
-      "en": "First opening detected."
     },
     "key_assigned": {
       "tr": "Tuş ataması tamamlandı.\n",
@@ -28,14 +20,6 @@
       "tr": "\" Tuşuna basıldı, döngü sonlandırılıyor.",
       "en": "\" Key is pressed, loop is getting end."
     },
-    "wrong_char":{
-      "tr":"Notalar geçersiz karakter içeriyor: ",
-      "en":"Sheet musics contain invalid characters: "
-    },
-    "sample_sheet":{
-      "tr":"Örnek nota formatı: A1B2C3 A1 B5",
-      "en":"Sample sheet format: A1B2C3 A1 B5"
-    },
     "unknown_err":{
       "tr":"Bilinmeyen bir hata oluştu ",
       "en":"An unknown error occurs: "
@@ -43,14 +27,6 @@
     "choose_music": {
       "tr": "\nListeden seçin\n>> ",
       "en": "\nChoose from list\n>> "
-    },
-    "added_to_preloaded_library": {
-      "tr": "Hazır müzik kütüphanesine eklendi.",
-      "en": "Added to the preloaded music library."
-    },
-    "not_added_to_preloaded_lib": {
-      "tr": "Hazır müzik kütüphanesine eklenirken bir sorun oluştu.",
-      "en": "A problem occurred while adding to the preloaded music library."
     },
     "restart": {
       "tr": "Devam etmek için Enter'e basın:\nÇıkmak için 0'a basın\n",
@@ -77,16 +53,12 @@
       "en":"A problem occurred while checking for updates"
     },
     "unknown_format": {
-      "tr": "'notes veya columns' anahtarı dosyasında bulunamadı, yanlış veya hatalı dosya olabilir!!",
-      "en": ": There aren't 'notes or columns' key in file. Invalid file content!!"
+      "tr": "'notes veya columns' anahtarı dosyada bulunamadı, yanlış veya hatalı dosya olabilir!!",
+      "en": "There aren't 'notes or columns' key in file. Invalid file content!!"
     },
     "changelog": {
       "tr":"Sürüm Notları: \n",
       "en":"Changelog: \n"
-    },
-    "close_sound": {
-      "tr":"Scriptin seslerini kapatmak istermisiniz ? \n1 Evet \n2 Hayır",
-      "en":"Would you like to turn off the sounds of the script? \n1 Yes \n2 No"
     },
     "focus_lost": {
       "tr":"Pencere odağı kaybedildi!! Müzik durduruldu\n",
@@ -96,10 +68,6 @@
       "tr":"Çalma süresi * saniye",
       "en":"Playback duration * second"
     },
-    "talking_script":{
-      "tr":"Konuşan Script modunu açmak istermisiniz? \n1 Evet \n2 Hayır",
-      "en":"Would you like to enable Talking Script mode? \n1 Yes \n2 No"
-    },
     "select_window":{
       "tr":"\nOdaklamak istediğiniz pencereyi seçin\n0 Pencere seçmeden devam et",
       "en":"\nSelect the window you want to focus on\n0 Continue without select window"
@@ -107,6 +75,14 @@
     "give_focus":{
       "tr":"Seçtiğiniz pencereye odak verin",
       "en":"Give focus to the window you selected"
+    },
+    "sheet_type_note":{
+      "tr":"Nota türü: Nota",
+      "en":"Sheet type: Note"
+    },
+    "sheet_type_column":{
+      "tr":"Nota türü: Sütun",
+      "en":"Sheet type: Column"
     }
   }
 }

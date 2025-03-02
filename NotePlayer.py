@@ -1,18 +1,16 @@
 import time
 import keyboard
 import pygetwindow as gw
-import os
-from common import load_translations, speak
-from common import select_window
-import common
 
+#import module common
+import common
+from common import load_translations
+from common import select_window
+from rich.progress import Progress
 
 _ = load_translations()
 numbers = common.numbers
 keys = common.keys
-
-
-current_directory = os.getcwd()
 
 
 def timer(function = 0):
@@ -28,9 +26,9 @@ def timer(function = 0):
 
 
 
-def play_music(notes, sfx):
+def play_music(notes):
 
-    target = select_window(sfx)
+    target = select_window()
     Note_dict = {}
 
     for i in notes:
@@ -45,27 +43,31 @@ def play_music(notes, sfx):
     timer(1)
     counter = 0
     t1 = time.time()
-    for key,value in Note_dict.items():
-        counter += 1
-        current_time = timer()
-        while current_time < key:  # Wait for correct time
+    with Progress() as progress:
+        task = progress.add_task("[cyan]Playing...", total=len(Note_dict))
+
+        for key,value in Note_dict.items():
+            counter += 1
             current_time = timer()
-            time.sleep(0.0005)
-        
-        keyboard.send(value)
-        print(f"Time: {key} Key {value.capitalize()}")
+            while current_time < key:  # Wait for correct time
+                current_time = timer()
+                time.sleep(0.0005)
+            
+            keyboard.send(value)
+            progress.console.print(f"Time: {key} Key {value.capitalize()}")
 
-        if keyboard.is_pressed('"'):
-                break
-        
-        if target != None:
-            if gw.getActiveWindowTitle() != target:
-                speak("focus lost", sfx)
-                if not sfx:
-                    print(_("focus_lost"))
-                break
+            if keyboard.is_pressed('"'):
+                    break
+            
+            if target != None:
+                if gw.getActiveWindowTitle() != target:
+                    progress.console.print(_("focus_lost"))
+                    break
 
-    t2=time.time()
-    playtime = round(t2-t1, 1)
+            progress.update(task, advance=1)
+
+    t2 = time.time()
+    playtime = round(t2 - t1, 1)
+    print(_("sheet_type_note"))
     print(_("playback_duration").replace("*", str(playtime)))
 
