@@ -11,17 +11,18 @@
 
 #### Programın çalışabilmesi için:
 * [Python](https://www.python.org)'un bilgisayarınızda yüklü olduğundan emin olun.
+  
 ### Aşağıdaki kütüphaneleri yüklemeniz gerekmektedir:
-* elevate 
-* keyboard
-* requests
-* pygame
+* pygetwindow (Pencereleri seç ve odakla)
+* keyboard (klavyeden tuşlara bas)
+* requests (güncellemeleri kontrol et)
+* rich (ilerleme çubuğunu göster)
 
 
 Bu kütüphaneleri komut satırı arayüzünde(CMD) aşağıdaki komutları kullanarak yükleyin:
 
 ```cmd
-pip install elevate
+pip install pygetwindow
 ```
 
 ```cmd
@@ -33,7 +34,7 @@ pip install requests
 ```
 
 ```cmd
-pip install pygame
+pip install rich
 ```
 
 ## Kullanım:
