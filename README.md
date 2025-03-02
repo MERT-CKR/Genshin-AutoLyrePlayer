@@ -10,11 +10,12 @@
 
 #### To run the program:
 * Ensure that [Python](https://www.python.org) is installed on your computer.
+
 #### You need to install the following libraries:
-* pygetwindow (select and focus windows)
-* keyboard (press keys from keyboard)
-* requests (check updates)
-* rich (show progress bar)
+* **pygetwindow** (select and focus windows)
+* **keyboard** (press keys from keyboard)
+* **requests** (check updates)
+* **rich** (show progress bar)
 
 paste the fallowing codes to your terminal (CMD)
 
