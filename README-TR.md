@@ -13,10 +13,10 @@
 * [Python](https://www.python.org)'un bilgisayarınızda yüklü olduğundan emin olun.
   
 ### Aşağıdaki kütüphaneleri yüklemeniz gerekmektedir:
-* pygetwindow (Pencereleri seç ve odakla)
-* keyboard (klavyeden tuşlara bas)
-* requests (güncellemeleri kontrol et)
-* rich (ilerleme çubuğunu göster)
+* **pygetwindow** (Pencereleri seç ve odakla)
+* **keyboard** (klavyeden tuşlara bas)
+* **requests** (güncellemeleri kontrol et)
+* **rich** (ilerleme çubuğunu göster)
 
 
 Bu kütüphaneleri komut satırı arayüzünde(CMD) aşağıdaki komutları kullanarak yükleyin:
