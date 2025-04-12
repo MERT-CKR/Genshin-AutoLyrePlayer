@@ -17,20 +17,20 @@
       "en": "Starting..."
     },
     "loop_ending": {
-      "tr": "\" Tuşuna basıldı, döngü sonlandırılıyor.",
-      "en": "\" Key is pressed, loop is getting end."
+      "tr": "\" Tuşuna basıldı, Müzik duurduruldu.",
+      "en": "The \" Key is pressed, Music stopped"
     },
     "unknown_err":{
       "tr":"Bilinmeyen bir hata oluştu ",
       "en":"An unknown error occurs: "
     },
     "choose_music": {
-      "tr": "\nListeden seçin\n>> ",
-      "en": "\nChoose from list\n>> "
+      "tr": "\nListeden müziği seçin ve numarasını yazın\n>> ",
+      "en": "\nSelect the music from the list and write its number\n>> "
     },
     "restart": {
-      "tr": "Devam etmek için Enter'e basın:\nÇıkmak için 0'a basın\n",
-      "en": "Press Enter to continue \nPress 0 to exit\n"
+      "tr": "Devam etmek için Enter'e basın:\n",
+      "en": "Press Enter to continue:\n"
     },
     "Checking_updates":{
       "tr":"Güncellemeler kontrol ediliyor...",
@@ -40,7 +40,7 @@
       "tr":"Bağlantı hatası",
       "en":"Connection error"
     },
-    "using_last_version":{
+    "using_latest_version":{
       "tr":"Zaten son sürümü kullanıyorsunuz.\n",
       "en":"You are already using the latest version.\n"
     },
@@ -69,8 +69,12 @@
       "en":"Playback duration * second"
     },
     "select_window":{
-      "tr":"\nOdaklamak istediğiniz pencereyi seçin\n0 Pencere seçmeden devam et",
-      "en":"\nSelect the window you want to focus on\n0 Continue without select window"
+      "tr":"\nOdaklamak istediğiniz pencereyi seçin",
+      "en":"\nSelect the window you want to focus on"
+    },
+    "select_window2":{
+      "tr":"Pencere seçmeden devam et",
+      "en":"Continue without select window"
     },
     "give_focus":{
       "tr":"Seçtiğiniz pencereye odak verin",
@@ -84,5 +88,6 @@
       "tr":"Nota türü: Sütun",
       "en":"Sheet type: Column"
     }
+
   }
 }

@@ -46,8 +46,12 @@ supported_lang_index = lang_dict.keys()
 
 
 if user_locale not in supported_languages:
-    print("Select your language: \n1.Türkçe \n2.English")
 
+    print(f"\033[32mSelect your language:\033[0m")
+    counter = 0
+    for item in supported_languages:    
+        counter += 1
+        print(f"\033[93m{counter}\033[0m \033[91m{item}\033[0m") #Colorfull list
     input_lang_index = input(">> ")
     
     if input_lang_index in supported_lang_index:
@@ -57,7 +61,7 @@ if user_locale not in supported_languages:
             user_locale = selected_lang
 
     else:
-        raise ValueError(f"Language not selected \nOptions are only 1 and 2 !!!")
+        raise ValueError(f"Language not selected \nOptions are {supported_languages} !!!")
     
 
     settings["language"] = user_locale   
@@ -70,14 +74,14 @@ if user_locale not in supported_languages:
 import ColumnPlayer
 import NotePlayer
 from common import load_translations
-
+from common import print_red, print_yellow, print_green, print_colorful_list
 _ = load_translations()
 
 if settings["firstTime"] != 1:
     #first_opening
     settings["firstTime"] = 1
-    print(_("tutorial1"))
-    print(_("tutorial2"))
+    print_yellow(_("tutorial1"))
+    print_yellow(_("tutorial2"))
 
 
     new_keys = input(">> ")
@@ -90,12 +94,12 @@ if settings["firstTime"] != 1:
     with open(settings_path, 'w', encoding = "utf-8") as old_settings:
         json.dump({"settings": [settings]}, old_settings, indent = 4, ensure_ascii = False)
 
-    print(_("key_assigned"))
+    print_yellow(_("key_assigned"))
 
 
 
 def check_Updates():
-    print(_("Checking_updates"))
+    print_yellow(_("Checking_updates"))
     current_rel = settings["version"]
 
     url = "https://raw.githubusercontent.com/MERT-CKR/Genshin-AutoLyrePlayer/main/settings.json"
@@ -103,7 +107,7 @@ def check_Updates():
     try:
         response = requests.get(url, timeout=4)
     except requests.ConnectionError:
-        print(_("connection_error"))
+        print_red(_("connection_error"))
         connection = False
 
         
@@ -115,20 +119,20 @@ def check_Updates():
             changelog = json_content["changelog"]
 
             if new_rel == current_rel:
-                print(_("using_last_version"))
+                print_green(_("using_latest_version"))
                 
             elif new_rel > current_rel:
                 new_ver = _("new_version_available").replace("*current_rel", current_rel).replace("*new_rel", new_rel)
-                print(new_ver)
+                print_green(new_ver)
 
                 if changelog != "":
-                    print(_("changelog"))
-                    print(changelog)
+                    print_green(_("changelog"))
+                    print_yellow(changelog)
             else:
-                print("Developing")
+                print_yellow("Developing\n")
         except Exception as err:
-            print(err)
-            print(_("version_could_not_be_checked"))
+            print_red(err)
+            print_red(_("version_could_not_be_checked"))
             
 check_Updates()
 
@@ -138,18 +142,23 @@ musicDict = {}
 
 # Determine the note type and send sheets to player
 def return_notes(selection):
-    selection -= 1
-    musicDict[selection] = musicList[selection]
+    try:
+        selection -= 1
+        musicDict[selection] = musicList[selection]
+    except:
+        showList()
+        return
+
     with open(os.path.join(current_directory, "sheets", musicList[selection]), "r", encoding = "UTF-8") as data:
         data = json.load(data)
 
     if  "notes" in data[0]:
-        # file type = "notes"
+        # file type = "notes" (Generally, complex notes are in this format.)
         NotePlayer.play_music(data[0]["notes"])
 
     elif  "columns" in data[0]:
-        # file type = "columns"
-        bpm = data[0]["bpm"]
+        # file type = "columns" (simpler and more systematic note format)
+        bpm = data[0]["bpm"] #bpm: beats per minute 
         ColumnPlayer.play_music(data[0]["columns"], bpm)
         
     else:
@@ -158,13 +167,17 @@ def return_notes(selection):
 # Show user music list
 def showList():
     counter = 0
-    for x in musicList:
-        ext = x.split(".")[1]
-        x = x.replace("." + ext, "")
+    for item in musicList:
+        ext = item.split(".")[1]
+        item = item.replace("." + ext, "")#remove extension like .txt
         counter += 1
-        print(counter, x)
-        
-    selection = int(input(_("choose_music")))
+        print_colorful_list(counter, item)
+    
+    try:
+        selection = int(input(f"\033[32m{_("choose_music")}\033[0m"))# green input message
+    except:
+        showList()
+        return
     
     if selection > len(musicList) or selection <= 0:
         showList()
@@ -176,8 +189,5 @@ def showList():
 
 while __name__ == "__main__":
     showList()
-    print(_("restart"))
+    print_green(_("restart"))
     keep_continue = input(">> ")
-    if keep_continue == "0":
-        break
-    

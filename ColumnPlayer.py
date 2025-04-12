@@ -6,6 +6,7 @@ import pygetwindow as gw
 import common
 from common import load_translations
 from common import select_window
+from common import print_red, print_yellow
 from rich.progress import Progress
 
 _ = load_translations()
@@ -29,13 +30,17 @@ def play_music(sheets, bpm):
     target = select_window()
 
 
-    print("bpm", bpm)#bpm: beats per minute | bps: peats per second
+    print_yellow(f"bpm: {bpm}")
+    print("\n\n\n")
+    #bpm: beats per minute 
+    #bps: peats per second
+
     bps = bpm/60
     # bps -= bps *-0.10 # %10 play speed
     wait = 1/bps
     t1 = time.time()
     with Progress() as progress:
-        task = progress.add_task("[cyan]Playing...", total = len(sheets))
+        task = progress.add_task("[yellow]Playing...", total = len(sheets))
         for i in sheets:
             progress.update(task, advance=1)
             tempo = tempo_dict[i[0]]
@@ -66,13 +71,12 @@ def play_music(sheets, bpm):
             
 
             if keyboard.is_pressed('"'):
-                print(_("loop_ending"))
+                print_red(_("loop_ending"))
                 break
             
             if target != None:
                 if gw.getActiveWindowTitle() != target:
-                    
-                    progress.console.print(_("focus_lost"))
+                    print_red(_("focus_lost"))
                     break
 
 
@@ -92,5 +96,6 @@ def play_music(sheets, bpm):
         
     t2 = time.time()
     playtime = round(t2-t1, 1)
-    print(_("sheet_type_column"))
-    print(_("playback_duration").replace("*", str(playtime)))
+    print_yellow(_("sheet_type_column"))
+    progress.console.print(_("playback_duration").replace("*", str(playtime)))
+    progress.console.print("Bpm:", bpm,"\n")

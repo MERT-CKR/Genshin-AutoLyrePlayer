@@ -6,6 +6,7 @@ import pygetwindow as gw
 import common
 from common import load_translations
 from common import select_window
+from common import print_red, print_yellow
 from rich.progress import Progress
 
 _ = load_translations()
@@ -44,30 +45,35 @@ def play_music(notes):
     counter = 0
     t1 = time.time()
     with Progress() as progress:
-        task = progress.add_task("[cyan]Playing...", total=len(Note_dict))
+        task = progress.add_task("[yellow]Playing...", total=len(Note_dict))
 
         for key,value in Note_dict.items():
-            counter += 1
             current_time = timer()
             while current_time < key:  # Wait for correct time
+                counter +=1
                 current_time = timer()
                 time.sleep(0.0005)
+
+                if counter%200 == 0:
+                    print("\n")
             
             keyboard.send(value)
             progress.console.print(f"Time: {key} Key {value.capitalize()}")
 
             if keyboard.is_pressed('"'):
-                    break
+                print_red(_("loop_ending"))
+                break
             
             if target != None:
                 if gw.getActiveWindowTitle() != target:
-                    progress.console.print(_("focus_lost"))
+                    print_red(_("focus_lost"))
                     break
 
             progress.update(task, advance=1)
 
     t2 = time.time()
     playtime = round(t2 - t1, 1)
-    print(_("sheet_type_note"))
-    print(_("playback_duration").replace("*", str(playtime)))
+    print_yellow(_("sheet_type_note"))
+    progress.console.print(_("playback_duration").replace("*", str(playtime)))
+   
 
