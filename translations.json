@@ -57,8 +57,8 @@
       "en": "There aren't 'notes or columns' key in file. Invalid file content!!"
     },
     "changelog": {
-      "tr":"Sürüm Notları: \n",
-      "en":"Changelog: \n"
+      "tr":"Sürüm Notları:",
+      "en":"Changelog:"
     },
     "focus_lost": {
       "tr":"Pencere odağı kaybedildi!! Müzik durduruldu\n",
