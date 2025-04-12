@@ -4,7 +4,16 @@
 ## Bu uygulama, Windows platformundaki "Genshin Impact" isimli oyundaki enstrümanları otomatik olarak çalmak için tasarlandı. 
 
 ## YouTube'da izleyin👁️↓
-[![watch on YT](https://i3.ytimg.com/vi/gg87Hzbvlx4/maxresdefault.jpg)](https://www.youtube.com/watch?v=gg87Hzbvlx4)
+
+## Watch it on Youtube👁️ ↓
+<a href="https://www.youtube.com/watch?v=aagYDA_BwAY" target="_blank" style="display: inline-block; margin-right: 10px;">
+  <img src="https://i3.ytimg.com/vi/aagYDA_BwAY/maxresdefault.jpg" width="45%" />
+</a>
+
+<a href="https://www.youtube.com/watch?v=gg87Hzbvlx4" target="_blank" style="display: inline-block;">
+  <img src="https://i3.ytimg.com/vi/gg87Hzbvlx4/maxresdefault.jpg" width="45%" />
+</a>
+
 
 
 
