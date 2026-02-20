@@ -22,7 +22,7 @@ Play music automatically in **Genshin Impact** using sheet files!
 
 ### Option 1: Executable (Easiest)
 
-1. Download `GenshinAutoPlayer.exe` from the **Releases** page  
+1. Download `GenshinAutoPlayer.exe` from the [**Releases**](https://github.com/MERT-CKR/Genshin-AutoLyrePlayer/releases/tag/Genshin_Auto_Lyre_Player) page  
 2. Run as **Administrator**  
 3. Done!
 
@@ -129,6 +129,7 @@ Apache License Version 2.0
 ## 🙏 Credits
 
 - Made by **Mert Çakır**  
-- Uses **CustomTkinter**, **Pygame**
+- Uses **CustomTkinter**, **Pygame**, **PyAutoGUI**
 
 ---
+
