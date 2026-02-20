@@ -2,11 +2,15 @@
 
 Play music automatically in **Genshin Impact** using sheet files!
 
+<p align="center">
+  <img src="assets/Auto_instrument_player.gif" alt="Proje Tanıtım" width="1000"/>
+</p>
+
 ---
 
 ## ✨ Features
 
-- 🎹 21-key virtual piano interface  
+- 🪉 21-key virtual Genshin interface  
 - 🎵 Support for multiple instruments (Lyre, Zither, etc.)  
 - 📂 Easy sheet file management  
 - 🎮 Play in-game or locally  
@@ -116,14 +120,6 @@ Simply open the app and click the **Add Sheet** button.
 
 ---
 
-## ⚙️ System Requirements
-
-- Windows 10 / 11  
-- Administrator privileges (for in-game play)  
-- Genshin Impact (optional for local play)
-
----
-
 ## 📜 License
 
 Apache License Version 2.0
@@ -136,7 +132,3 @@ Apache License Version 2.0
 - Uses **CustomTkinter**, **Pygame**
 
 ---
-
-## 📧 Contact
-
-Report issues via **GitHub Issues**
