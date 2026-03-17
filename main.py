@@ -22,7 +22,7 @@ except Exception:
 pyautogui.PAUSE = 0
 pyautogui.FAILSAFE = False
 
-# ================= CONSTANTS =================
+
 BG = "#0B0D14"
 SIDEBAR = "#121526"
 BUTTON_BASE = "#3B426A"
@@ -88,7 +88,6 @@ def writable_path(filename):
 
 
 
-# ================= ADMIN =================
 
 def check_admin():
     try:
@@ -126,7 +125,6 @@ def request_admin_and_restart():
     sys.exit()
 
 
-# ================= HELPERS =================
 
 class AnimationState:
     def __init__(self, button, key):
@@ -219,7 +217,6 @@ class StopHintDialog(ctk.CTkToplevel):
         self.on_ok()
 
 
-# ================= MAIN APP =================
 
 class App(ctk.CTk):
     def __init__(self):
@@ -532,7 +529,6 @@ class App(ctk.CTk):
             self.refresh_music_list()
             self.update_status(f"{added} file(s) added")
 
-    # ================= CORE =================
 
     def change_instrument(self, choice):
         self.current_instrument = choice
@@ -562,12 +558,10 @@ class App(ctk.CTk):
         except Exception:
             return True
 
-    # ================= KEY HANDLING =================
 
     def on_key_press(self, event):
         """Klavye tuşlarını dinle"""
         if self.is_playing:
-            # ESC stop
             import keyboard
             if keyboard.is_pressed('esc') or keyboard.is_pressed('"'):
                 self.stop_playback()
@@ -622,7 +616,6 @@ class App(ctk.CTk):
             self.update_status(f"Error playing sound: {e}")
             
 
-    # ================= ANIMATION =================
 
     def start_animation(self, key):
         button = self.buttons.get(key)
@@ -673,7 +666,6 @@ class App(ctk.CTk):
         button.configure(width=BUTTON_SIZE, height=BUTTON_SIZE,
                          corner_radius=BUTTON_CORNER, fg_color=BUTTON_BASE)
 
-    # ================= PLAYBACK =================
 
     def _get_target_window(self):
         try:

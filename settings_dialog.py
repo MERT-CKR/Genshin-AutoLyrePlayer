@@ -83,7 +83,6 @@ def save_settings(path: str, new_keys: dict) -> bool:
         return False
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 class WindowPickerDialog(ctk.CTkToplevel):
     def __init__(self, parent, on_select):
         super().__init__(parent)
@@ -138,7 +137,6 @@ class SettingsDialog(ctk.CTkToplevel):
         self.settings      = load_settings(settings_path)
         self.key_entries   = {}   # key_name → CTkEntry widget
 
-        # ── window ─────────────────────────────────────────────────────────
         self.title("Settings")
         self.geometry("780x620")
         self.resizable(False, False)
@@ -146,7 +144,6 @@ class SettingsDialog(ctk.CTkToplevel):
         self.transient(parent)
         self.grab_set()
 
-        # ── avg ────────────────────────────────────────────────────────
         self.update_idletasks()
         px = parent.winfo_x() + (parent.winfo_width()  - 780) // 2
         py = parent.winfo_y() + (parent.winfo_height() - 620) // 2
@@ -199,9 +196,7 @@ class SettingsDialog(ctk.CTkToplevel):
         self._build_about(self.tabview.tab("🌐  About"))
         self._build_updates(self.tabview.tab("🔄  Updates"))
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 1. KEY BINDINGS TAB
-    # ══════════════════════════════════════════════════════════════════════════
+
     def _build_keybindings(self, tab):
         current_keys_str = self.settings.get("keys", "q w e r t y u a s d f g h j z x c v b n m")
         current_keys     = current_keys_str.split()
@@ -352,9 +347,7 @@ class SettingsDialog(ctk.CTkToplevel):
 
         self.after(3000, lambda: self._keybind_status.configure(text=""))
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 2. ABOUT TAB
-    # ══════════════════════════════════════════════════════════════════════════
+
     def _build_about(self, tab):
         from PIL import Image
         from customtkinter import CTkImage
@@ -392,7 +385,6 @@ class SettingsDialog(ctk.CTkToplevel):
             justify="center"
         ).pack(pady=(0, 18))
 
-        # link cards
         links_frame = ctk.CTkFrame(tab, fg_color="transparent")
         links_frame.pack()
 
@@ -450,7 +442,6 @@ class SettingsDialog(ctk.CTkToplevel):
             card.configure(cursor="hand2")
 
 
-        # changelog
         changelog = self.settings.get("changelog", "")
         if changelog:
             ctk.CTkLabel(
@@ -496,9 +487,6 @@ class SettingsDialog(ctk.CTkToplevel):
             text_color="#3a3f5a"
         ).pack(pady=(3, 0))
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 3. UPDATES TAB
-    # ══════════════════════════════════════════════════════════════════════════
     def _build_updates(self, tab):
         self._update_frame = tab
 
