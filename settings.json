@@ -4,8 +4,8 @@
             "Default_keys": "q w e r t y u a s d f g h j z x c v b n m",
             "language": "en",
             "keys": "q w e r t y u a s d f g h j z x c v b n m",
-            "changelog": "A full graphical interface is now available! Download the new version and enjoy a much smoother experience — no more typing commands.",
-            "version": "3.0",
+            "changelog": "New File Extension Support: Added support for .skysheet files.",
+            "version": "3.2",
             "target_window": "",
             "hide_stop_hint": false 
         }
