@@ -22,7 +22,7 @@ except Exception:
 pyautogui.PAUSE = 0
 pyautogui.FAILSAFE = False
 
-
+# ================= CONSTANTS =================
 BG = "#0B0D14"
 SIDEBAR = "#121526"
 BUTTON_BASE = "#3B426A"
@@ -56,6 +56,13 @@ KEY_INDEX = {
     "z": 14, "x": 15, "c": 16, "v": 17, "b": 18, "n": 19, "m": 20
 }
 
+SKY_KEY_MAP = {
+    "0": "z", "1": "x", "2": "c", "3": "v", "4": "b",
+    "5": "n", "6": "m", "7": "a", "8": "s", "9": "d",
+    "10": "f", "11": "g", "12": "h", "13": "j", "14": "q",
+}
+
+
 TEMPO_DICT = {0: 1, 1: 2, 2: 4, 3: 8}
 
 NUMBERS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
@@ -88,6 +95,7 @@ def writable_path(filename):
 
 
 
+# ================= ADMIN =================
 
 def check_admin():
     try:
@@ -125,6 +133,7 @@ def request_admin_and_restart():
     sys.exit()
 
 
+# ================= HELPERS =================
 
 class AnimationState:
     def __init__(self, button, key):
@@ -217,6 +226,7 @@ class StopHintDialog(ctk.CTkToplevel):
         self.on_ok()
 
 
+# ================= MAIN APP =================
 
 class App(ctk.CTk):
     def __init__(self):
@@ -529,6 +539,7 @@ class App(ctk.CTk):
             self.refresh_music_list()
             self.update_status(f"{added} file(s) added")
 
+    # ================= CORE =================
 
     def change_instrument(self, choice):
         self.current_instrument = choice
@@ -558,10 +569,12 @@ class App(ctk.CTk):
         except Exception:
             return True
 
+    # ================= KEY HANDLING =================
 
     def on_key_press(self, event):
         """Klavye tuşlarını dinle"""
         if self.is_playing:
+            # ESC stop
             import keyboard
             if keyboard.is_pressed('esc') or keyboard.is_pressed('"'):
                 self.stop_playback()
@@ -616,6 +629,7 @@ class App(ctk.CTk):
             self.update_status(f"Error playing sound: {e}")
             
 
+    # ================= ANIMATION =================
 
     def start_animation(self, key):
         button = self.buttons.get(key)
@@ -666,6 +680,7 @@ class App(ctk.CTk):
         button.configure(width=BUTTON_SIZE, height=BUTTON_SIZE,
                          corner_radius=BUTTON_CORNER, fg_color=BUTTON_BASE)
 
+    # ================= PLAYBACK =================
 
     def _get_target_window(self):
         try:
@@ -743,6 +758,7 @@ class App(ctk.CTk):
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             if not data:
+                print(f"DEBUG data keys: {list(data[0].keys()) if isinstance(data, list) and data else data}")
                 raise ValueError("Empty music file")
             target_title = self._get_target_window() if mode == "game" else ""
             if "notes" in data[0]:
@@ -754,15 +770,24 @@ class App(ctk.CTk):
                 self.current_bpm = bpm
                 self.after(0, lambda: self.bpm_label.configure(text=f"{bpm} BPM"))
                 self._play_columns_format(data[0]["columns"], bpm, mode, target_title)
+            elif "songNotes" in data[0]:                          # ← YENİ
+                bpm = data[0].get("bpm", 120)
+                self.current_bpm = bpm
+                self.after(0, lambda: self.bpm_label.configure(text=f"{bpm} BPM"))
+                self._play_song_notes_format(data[0]["songNotes"], mode, target_title)
             else:
+                print(data)
+                print(f"DEBUG: data type={type(data)}, keys={list(data[0].keys()) if isinstance(data, list) and data else data}")
                 raise ValueError("Unknown format")
         except FileNotFoundError:
             self.after(0, lambda: self.update_status("File not found"))
         except json.JSONDecodeError:
             self.after(0, lambda: self.update_status("Invalid JSON"))
         except Exception as e:
-            self.after(0, lambda: self.update_status(f"Error: {str(e)[:30]}"))
-            self.update_status(f"Playback error: {traceback.format_exc()}")
+            full_error = traceback.format_exc()
+            print(f"PLAYBACK ERROR:\n{full_error}")
+            error_msg = f"Error: {str(e)[:60]}"
+            self.after(0, lambda m=error_msg: self.status_label.configure(text=m))
         finally:
             self.after(0, self.stop_playback)
 
@@ -825,6 +850,46 @@ class App(ctk.CTk):
             else:
                 pyautogui.press(key)
                 self.after(0, lambda k=key: self.start_animation(k))
+
+    def _play_song_notes_format(self, notes, mode, target_title=""):
+        if not notes:
+            return
+        
+        first_time = notes[0].get("time", 0)
+        self._start_timer()
+        
+        for note in notes:
+            if not self.is_playing:
+                break
+            
+            key_name = note.get("key", "")
+            time_ms = note.get("time", 0) - first_time
+            
+            if "Key" in key_name:
+                note_num = key_name.replace("1Key", "")
+                key = SKY_KEY_MAP.get(note_num)
+            else:
+                key = None
+            
+            if not key:
+                continue
+            
+            while self._get_timer_ms() < time_ms:
+                if not self.is_playing:
+                    return
+                if mode == "game" and target_title and not self._is_target_focused(target_title):
+                    self.after(0, lambda: self.update_status("Paused — focus lost"))
+                    if not self._wait_for_focus(target_title):
+                        return
+                    self.after(0, lambda: self.update_status("Resumed"))
+                time.sleep(0.0005)
+            
+            if mode == "here":
+                self.press_key(key)
+            else:
+                pyautogui.press(key)
+                self.after(0, lambda k=key: self.start_animation(k))
+
 
     def _start_timer(self):
         now = time.time()

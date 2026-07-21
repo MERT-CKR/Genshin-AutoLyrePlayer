@@ -1,0 +1,1 @@
+pyinstaller --onefile --windowed --icon=assets/logo.png --add-data "assets;assets" --add-data "key_sounds;key_sounds" --add-data "sheets;sheets" --name "GenshinAutoPlayer" main.py
