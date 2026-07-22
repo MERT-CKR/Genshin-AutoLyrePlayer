@@ -93,28 +93,18 @@ You can create music there and play it directly in this app or in-game.
 - `.txt`  
 - `.json`  
 - `.genshinsheet`
-
+- `.skysheet` (new)
 ---
 
 ## 📥 Adding Sheets
 
-### `.genshinsheet`
-
-This format is fully supported.  
 Simply open the app and click the **Add Sheet** button.
-
-### `.skysheet`
-
-1. Upload it to [Genshin Music Nightly](https://specy.github.io/genshinMusic/)  
-2. Download it in a supported format  
-3. Open the app and click **Add Sheet**
 
 ---
 
 ## 📁 Managing Sheets
-
-- Press `Win + R`, type `appdata` and go to `\GenshinAutoPlayer\sheets`
-- The `sheets` folder contains all available music files  
+- **Quick access:** Settings → "📂 Open Sheets Folder"
+- **Manual access:** Win + R → type `%appdata%` → go to`GenshinAutoPlayer\sheets`
 - You can rename or remove them freely  
 - If there are no sheets, simply add your own
 
