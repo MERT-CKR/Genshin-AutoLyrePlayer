@@ -53,7 +53,7 @@ python main.py
 ## 🎮 How to Use
 
 1. **Select Instrument** – Choose from the dropdown  
-2. **Add Sheet** – Click the "Add Sheet" button  
+2. **Add Sheet** – Click the "Add Sheet" or "import MIDI" button  
 3. **Select Music** – Click on a song  
 4. **Play** – Choose "Play Here" or "Play at Game"
 
@@ -72,6 +72,7 @@ The application supports both:
 
 - `notes` structure  
 - `columns` structure  
+- `midi/mid` files
 
 It uses the same note system as:
 
@@ -88,21 +89,25 @@ You can create music there and play it directly in this app or in-game.
 
 ---
 
+## 📥 Adding Sheets
+
+You can import your sheet music using **Add Sheet** or **import MIDI**.
+
+---
+
 ## 📂 Supported Sheet File Extensions
 
 - `.txt`  
 - `.json`  
 - `.genshinsheet`
 - `.skysheet` (new)
----
-
-## 📥 Adding Sheets
-
-Simply open the app and click the **Add Sheet** button.
+- `.midi` (new)
+- `.mid` (new)
 
 ---
 
 ## 📁 Managing Sheets
+
 - **Quick access:** Settings → "📂 Open Sheets Folder"
 - **Manual access:** Win + R → type `%appdata%` → go to`GenshinAutoPlayer\sheets`
 - You can rename or remove them freely  
@@ -123,23 +128,20 @@ Apache License Version 2.0
 
 ---
 
+## Didn't find what you were looking for?
 
-# Didn't find what you were looking for?
+We're here to help. Here's how you can reach us:  
 
-We're here to help. Here's how you can reach us:
+- ## 🐛 Report an issue
 
----
+   If you're using **GitHub**, feel free to open an issue in the relevant repository.  
+   We'll take a look as soon as possible.
 
-### 🐛 Report an issue
-If you're using **GitHub**, feel free to open an issue in the relevant repository.  
-We'll take a look as soon as possible.
+- ## 💬 Ask developer on Discord
 
-### 💬 Ask developer on Discord
-For faster feedback or direct support, you can reach me on Discord:  
-**`luvica0`**
+   For faster feedback or direct support, you can reach me on Discord:  
+   **`luvica0`**
 
 ---
 
 > Your feedback matters — don't hesitate to get in touch!
-
-

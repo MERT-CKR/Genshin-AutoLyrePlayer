@@ -4,8 +4,8 @@
             "Default_keys": "q w e r t y u a s d f g h j z x c v b n m",
             "language": "en",
             "keys": "q w e r t y u a s d f g h j z x c v b n m",
-            "changelog": "New File Extension Support: Added support for .skysheet files.",
-            "version": "3.2",
+            "changelog": "Now we can play MIDI files.",
+            "version": "3.5",
             "target_window": "",
             "hide_stop_hint": false 
         }

@@ -67,6 +67,16 @@ def load_settings(path: str) -> dict:
         return {}
 
 
+def load_bundled_info() -> dict:
+    """Version and changelog always come from the settings.json shipped with the app."""
+    try:
+        with open(resource_path("settings.json"), "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data["settings"][0]
+    except Exception:
+        return {}
+
+
 def save_settings(path: str, new_keys: dict) -> bool:
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -136,6 +146,9 @@ class SettingsDialog(ctk.CTkToplevel):
 
         self.settings_path = settings_path
         self.settings      = load_settings(settings_path)
+        bundled = load_bundled_info()
+        self.settings["version"] = bundled.get("version", self.settings.get("version", "?"))
+        self.settings["changelog"] = bundled.get("changelog", self.settings.get("changelog", ""))
         self.key_entries   = {}   # key_name → CTkEntry widget
 
         # ── window ─────────────────────────────────────────────────────────

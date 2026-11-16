@@ -1,5 +1,7 @@
 from settings_dialog import SettingsDialog
+from midi_import import MidiImportDialog, MIDI_EXTENSIONS, load_midi
 
+import tkinter as tk
 import customtkinter as ctk
 import os
 import pygame
@@ -38,6 +40,7 @@ HOLDER_SIZE = 90
 
 UNSTABLE_INSTRUMENTS = ["LingeringEuphonia", "Ukulele"]
 
+
 NOTE_NAMES = {
     "q": "C", "w": "D", "e": "E", "r": "F", "t": "G", "y": "A", "u": "B",
     "a": "C", "s": "D", "d": "E", "f": "F", "g": "G", "h": "A", "j": "B",
@@ -56,6 +59,8 @@ KEY_INDEX = {
     "z": 14, "x": 15, "c": 16, "v": 17, "b": 18, "n": 19, "m": 20
 }
 
+KEY_ORDER = [k for row in KEY_LAYOUT for k in row]
+
 SKY_KEY_MAP = {
     "0": "z", "1": "x", "2": "c", "3": "v", "4": "b",
     "5": "n", "6": "m", "7": "a", "8": "s", "9": "d",
@@ -71,7 +76,6 @@ KEYS = ["q", "w", "e", "r", "t", "y", "u", "a", "s", "d", "f", "g", "h", "j",
         "z", "x", "c", "v", "b", "n", "m"][::-1]
 
 ANIMATION_DURATION = 12
-ANIMATION_FRAME_TIME = 1000 // 80
 STOP_KEYS = {"escape", "\""}
 
 def resource_path(relative_path):
@@ -115,7 +119,10 @@ def request_admin_and_restart():
     ctk.set_appearance_mode("dark")
     win = ctk.CTk()
     win.title("Administrator Required")
-    win.geometry("420x200")
+    width, height = 420, 200
+    pos_x = (win.winfo_screenwidth() - width) // 2
+    pos_y = (win.winfo_screenheight() - height) // 2
+    win.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
     win.resizable(False, False)
     win.configure(fg_color="#121526")
     ctk.CTkLabel(win, text="Administrator Privileges Required",
@@ -135,13 +142,113 @@ def request_admin_and_restart():
 
 # ================= HELPERS =================
 
-class AnimationState:
-    def __init__(self, button, key):
-        self.button = button
-        self.key = key
-        self.step = 0
+
+import tkinter as tk
 
 
+def mix_color(base, target, amount):
+    amount = max(0.0, min(1.0, amount))
+    r = int(base[0] + (target[0] - base[0]) * amount)
+    g = int(base[1] + (target[1] - base[1]) * amount)
+    b = int(base[2] + (target[2] - base[2]) * amount)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def rounded_square_points(cx, cy, half, radius):
+    """Polygon points for a rounded square, to be drawn with smooth=True."""
+    x1, y1, x2, y2 = cx - half, cy - half, cx + half, cy + half
+    r = min(radius, half)
+    return [
+        x1 + r, y1, x1 + r, y1, x2 - r, y1, x2 - r, y1,
+        x2, y1, x2, y1 + r, x2, y1 + r, x2, y2 - r, x2, y2 - r,
+        x2, y2, x2 - r, y2, x2 - r, y2, x1 + r, y2, x1 + r, y2,
+        x1, y2, x1, y2 - r, x1, y2 - r, x1, y1 + r, x1, y1 + r,
+        x1, y1,
+    ]
+
+
+class KeyPad(tk.Canvas):
+    CELL = HOLDER_SIZE + 12
+    DURATION = 0.28          # seconds
+    FRAME_MS = 16
+    CORNER = 26              # corner radius, bigger = rounder
+    BORDER_WIDTH = 2
+    BASE_RGB = (59, 66, 106)
+    ACTIVE_RGB = (108, 124, 255)
+    BORDER_BASE_RGB = (92, 102, 158)
+    BORDER_ACTIVE_RGB = (190, 198, 255)
+    BG_RGB = (11, 13, 20)
+
+    def __init__(self, parent, on_press):
+        cols, rows = len(KEY_LAYOUT[0]), len(KEY_LAYOUT)
+        super().__init__(parent, width=cols * self.CELL, height=rows * self.CELL,
+                         bg=BG, highlightthickness=0, bd=0)
+        self.on_press = on_press
+        self.items = {}      # key -> (shape, ring, text, cx, cy)
+        self.pulses = {}     # key -> start time
+        self.loop_running = False
+        self.rest_fill = mix_color(self.BASE_RGB, self.BASE_RGB, 0)
+        self.rest_border = mix_color(self.BORDER_BASE_RGB, self.BORDER_BASE_RGB, 0)
+        half = BUTTON_SIZE / 2
+
+        for r, row in enumerate(KEY_LAYOUT):
+            for c, key in enumerate(row):
+                cx = c * self.CELL + self.CELL / 2
+                cy = r * self.CELL + self.CELL / 2
+                ring = self.create_polygon(rounded_square_points(cx, cy, half, self.CORNER),
+                                           smooth=True, fill="", outline=BG, width=2,
+                                           state="hidden")
+                shape = self.create_polygon(rounded_square_points(cx, cy, half, self.CORNER),
+                                            smooth=True, fill=self.rest_fill,
+                                            outline=self.rest_border, width=self.BORDER_WIDTH)
+                text = self.create_text(cx, cy, text=key.upper(), fill=TEXT,
+                                        font=("Segoe UI", 18, "bold"))
+                self.items[key] = (shape, ring, text, cx, cy)
+                for item in (shape, text):
+                    self.tag_bind(item, "<Button-1>", lambda e, k=key: self.on_press(k))
+
+    def pulse(self, key):
+        if key not in self.items:
+            return
+        self.pulses[key] = time.perf_counter()
+        if not self.loop_running:
+            self.loop_running = True
+            self._tick()
+
+    def _tick(self):
+        now = time.perf_counter()
+        finished = []
+        for key, start in self.pulses.items():
+            t = (now - start) / self.DURATION
+            shape, ring, _, cx, cy = self.items[key]
+            if t >= 1:
+                self._set_shape(shape, cx, cy, 1.0, self.rest_fill, self.rest_border)
+                self.itemconfigure(ring, state="hidden")
+                finished.append(key)
+                continue
+            # quick pop up, smooth settle back
+            scale = 1 + 0.17 * (1 - abs(2 * (t ** 0.6) - 1) ** 2)
+            glow = (1 - t) ** 1.5
+            self._set_shape(shape, cx, cy, scale,
+                            mix_color(self.BASE_RGB, self.ACTIVE_RGB, glow),
+                            mix_color(self.BORDER_BASE_RGB, self.BORDER_ACTIVE_RGB, glow))
+
+            # expanding ring that fades out
+            ring_half = BUTTON_SIZE / 2 * (1 + 0.55 * t)
+            self.coords(ring, *rounded_square_points(cx, cy, ring_half, self.CORNER * (1 + 0.55 * t)))
+            self.itemconfigure(ring, state="normal",
+                               outline=mix_color(self.ACTIVE_RGB, self.BG_RGB, t))
+        for key in finished:
+            del self.pulses[key]
+        if self.pulses:
+            self.after(self.FRAME_MS, self._tick)
+        else:
+            self.loop_running = False
+
+    def _set_shape(self, shape, cx, cy, scale, fill, outline):
+        half = BUTTON_SIZE / 2 * scale
+        self.coords(shape, *rounded_square_points(cx, cy, half, self.CORNER * scale))
+        self.itemconfigure(shape, fill=fill, outline=outline)
 class ConfirmDialog(ctk.CTkToplevel):
     def __init__(self, parent, title, message, on_confirm):
         super().__init__(parent)
@@ -241,6 +348,7 @@ class App(ctk.CTk):
         self.selected_music_name = None
         self.music_items = {}
         self.current_instrument = None
+        self.sound_cache = {}
         self.key_queue = queue.Queue()
         self.processing = True
         self.is_playing = False
@@ -249,8 +357,7 @@ class App(ctk.CTk):
 
         self.timer_start = 0
         self.timer_ms = 0
-        self.active_animations = []
-        self.animation_loop_running = False
+        
 
         
         self.sheets_dir = writable_path("sheets")
@@ -380,7 +487,18 @@ class App(ctk.CTk):
 
         self.music_items[name] = item_frame
 
+    def _typing_in_entry(self):
+        try:
+            widget = self.focus_get()
+            return widget is not None and widget.winfo_class() in ("Entry", "Text")
+        except Exception:
+            return False
+
     def _on_delete_key(self, event=None):
+
+        if self._typing_in_entry():
+            return
+        
         if not self.selected_music_name:
             return
         if self.is_playing:
@@ -451,31 +569,31 @@ class App(ctk.CTk):
         if "Lyre" in instruments:
             self.instrument_box.set("Lyre")
             self.current_instrument = "Lyre"
+
         elif instruments and instruments[0] not in ["No instruments found", "Sounds folder missing"]:
             self.instrument_box.set(instruments[0])
             self.current_instrument = instruments[0]
+
+        if self.current_instrument:
+            self._preload_instrument(self.current_instrument)
+
         self.bpm_label = ctk.CTkLabel(top_bar, text="", text_color="#888", font=ctk.CTkFont(size=12))
         self.bpm_label.pack(side="left", padx=15)
         self.play_indicator = ctk.CTkLabel(top_bar, text="", text_color="#ff5555",
                                             font=ctk.CTkFont(size=12, weight="bold"))
         self.play_indicator.pack(side="left", padx=10)
+        self.midi_btn = ctk.CTkButton(top_bar, text="🎼  Import MIDI", width=140, height=34,
+                                corner_radius=10, fg_color=PLAY_1, hover_color="#4B4ACF",
+                                text_color=TEXT, font=ctk.CTkFont(size=13, weight="bold"),
+                                command=self.import_midi_button)
+        self.midi_btn.pack(side="right")
         self.build_button_grid(content)
         self.build_play_controls(content)
 
     def build_button_grid(self, parent):
-        grid = ctk.CTkFrame(parent, fg_color=BG)
-        grid.pack(pady=25)
-        for r, row in enumerate(KEY_LAYOUT):
-            for c, key in enumerate(row):
-                holder = ctk.CTkFrame(grid, width=HOLDER_SIZE, height=HOLDER_SIZE, fg_color=BG)
-                holder.grid(row=r, column=c, padx=6, pady=6)
-                holder.grid_propagate(False)
-                btn = ctk.CTkButton(holder, text=key.upper(), width=BUTTON_SIZE, height=BUTTON_SIZE,
-                                    corner_radius=BUTTON_CORNER, fg_color=BUTTON_BASE,
-                                    hover_color=BUTTON_BASE, font=ctk.CTkFont(size=18, weight="bold"),
-                                    text_color=TEXT, command=lambda k=key: self.trigger_button(k))
-                btn.place(relx=0.5, rely=0.5, anchor="center")
-                self.buttons[key] = btn
+        self.buttons = {key: None for key in KEY_ORDER}   # only used for key lookups
+        self.keypad = KeyPad(parent, lambda k: self.trigger_button(k, show_note=True))
+        self.keypad.pack(pady=25)
 
     def build_play_controls(self, parent):
         play_container = ctk.CTkFrame(parent, fg_color=BG)
@@ -520,28 +638,58 @@ class App(ctk.CTk):
         from tkinter import filedialog
         import shutil
         paths = filedialog.askopenfilenames(
-            title="Select Sheet Files",
+            title="Select Sheet or MIDI Files",
             filetypes=[
-                ("Sheet files", "*.json *.txt *.genshinsheet"),
-                ("JSON files", "*.json"),
-                ("TXT files", "*.txt"),
-                ("GENSHINSHEET files", "*.genshinsheet")
+                ("All supported", "*.json *.txt *.genshinsheet *.skysheet *.mid *.midi"),
+                ("Sheet files", "*.json *.txt *.genshinsheet *.skysheet"),
+                ("MIDI files", "*.mid *.midi"),
             ]
         )
         added = 0
         for path in paths:
             try:
-                shutil.copy2(path, os.path.join(self.sheets_dir, os.path.basename(path)))
-                added += 1
+                if path.lower().endswith(MIDI_EXTENSIONS):
+                    if self._import_midi_file(path):
+                        added += 1
+                else:
+                    shutil.copy2(path, os.path.join(self.sheets_dir, os.path.basename(path)))
+                    added += 1
             except Exception as e:
                 self.update_status(f"Error: {str(e)[:20]}")
         if added:
             self.refresh_music_list()
             self.update_status(f"{added} file(s) added")
 
+    def _import_midi_file(self, path):
+        try:
+            midi_info = load_midi(path)
+        except Exception as e:
+            self.update_status(f"MIDI error: {str(e)[:20]}")
+            return False
+        if not midi_info.channels:
+            self.update_status("MIDI has no notes")
+            return False
+        dialog = MidiImportDialog(self, path, midi_info, self.sheets_dir)
+        self.wait_window(dialog)
+        return bool(dialog.saved_name)
+
+    def import_midi_button(self):
+        from tkinter import filedialog
+        paths = filedialog.askopenfilenames(
+            title="Select MIDI Files",
+            filetypes=[("MIDI files", "*.mid *.midi")]
+        )
+        added = 0
+        for path in paths:
+            if self._import_midi_file(path):
+                added += 1
+        if added:
+            self.refresh_music_list()
+            self.update_status(f"{added} MIDI imported")
     # ================= CORE =================
 
     def change_instrument(self, choice):
+        self._preload_instrument(choice)
         self.current_instrument = choice
         if choice in UNSTABLE_INSTRUMENTS:
             self.update_status(f"{choice} — Not stable, may have issues")
@@ -573,6 +721,10 @@ class App(ctk.CTk):
 
     def on_key_press(self, event):
         """Klavye tuşlarını dinle"""
+
+        if self._typing_in_entry():
+            return
+        
         if self.is_playing:
             # ESC stop
             import keyboard
@@ -587,7 +739,7 @@ class App(ctk.CTk):
         
         key = event.char.lower()
         if key in self.buttons:
-            self.trigger_button(key)
+            self.trigger_button(key, show_note=True)
 
     def press_key(self, key):
         if key in self.buttons:
@@ -603,13 +755,33 @@ class App(ctk.CTk):
         if self.processing:
             self.after(5, self.process_key_queue)
 
-    def trigger_button(self, key):
+    def trigger_button(self, key, show_note=False):
         self.play_sound(key)
         self.start_animation(key)
-        if not self.is_playing:
+        if show_note and not self.is_playing:
             note = NOTE_NAMES.get(key, "")
             if note:
                 self._show_note(key, note)
+
+    def _get_sound(self, instrument, index):
+        cache_key = (instrument, index)
+        sound = self.sound_cache.get(cache_key)
+        if sound is None:
+            path = os.path.join(self.sounds_dir, instrument, f"{index}.mp3")
+            if not os.path.exists(path):
+                return None
+            sound = pygame.mixer.Sound(path)
+            self.sound_cache[cache_key] = sound
+        return sound
+
+    def _preload_instrument(self, instrument):
+        def worker():
+            for index in range(21):
+                try:
+                    self._get_sound(instrument, index)
+                except Exception:
+                    pass
+        threading.Thread(target=worker, daemon=True).start()
 
     def play_sound(self, key):
         if not self.current_instrument:
@@ -617,68 +789,19 @@ class App(ctk.CTk):
         index = KEY_INDEX.get(key)
         if index is None:
             return
-        path = os.path.join(
-            self.sounds_dir,
-            self.current_instrument,
-            f"{index}.mp3"
-        )
         try:
-            if os.path.exists(path):
-                pygame.mixer.Sound(path).play()
+            sound = self._get_sound(self.current_instrument, index)
+            if sound:
+                sound.play()
         except Exception as e:
             self.update_status(f"Error playing sound: {e}")
-            
 
     # ================= ANIMATION =================
 
     def start_animation(self, key):
-        button = self.buttons.get(key)
-        if not button:
-            return
-        for anim in self.active_animations:
-            if anim.key == key:
-                anim.step = 0
-                return
-        self.active_animations.append(AnimationState(button, key))
-        if not self.animation_loop_running:
-            self.animation_loop_running = True
-            self.run_animation_loop()
+        self.keypad.pulse(key)
 
-    def run_animation_loop(self):
-        if not self.active_animations:
-            self.animation_loop_running = False
-            return
-        completed = []
-        for anim in self.active_animations:
-            self.update_animation(anim)
-            if anim.step >= ANIMATION_DURATION:
-                self.reset_button(anim.button)
-                completed.append(anim)
-        for anim in completed:
-            self.active_animations.remove(anim)
-        if self.active_animations:
-            self.after(ANIMATION_FRAME_TIME, self.run_animation_loop)
-        else:
-            self.animation_loop_running = False
 
-    def update_animation(self, anim):
-        step = anim.step
-        t = step / ANIMATION_DURATION
-        scale = 1 + 0.17 * (1 - (2 * t - 1) ** 2)
-        size = int(BUTTON_SIZE * scale)
-        base = (59, 66, 106)
-        active = (108, 124, 255)
-        mix = min(step / (ANIMATION_DURATION / 2), 1)
-        r = int(base[0] + (active[0] - base[0]) * mix)
-        g = int(base[1] + (active[1] - base[1]) * mix)
-        b = int(base[2] + (active[2] - base[2]) * mix)
-        anim.button.configure(width=size, height=size, corner_radius=size // 2,
-                               fg_color=f"#{r:02x}{g:02x}{b:02x}")
-        anim.step += 1
-
-    def reset_button(self, button):
-        button.configure(width=BUTTON_SIZE, height=BUTTON_SIZE,
-                         corner_radius=BUTTON_CORNER, fg_color=BUTTON_BASE)
 
     # ================= PLAYBACK =================
 
@@ -822,83 +945,79 @@ class App(ctk.CTk):
                     self.after(0, lambda k=key: self.start_animation(k))
             time.sleep(wait_time)
 
+    def _send_keys(self, keys, mode):
+        if mode == "here":
+            for key in keys:
+                self.press_key(key)
+        else:
+            for key in keys:
+                pyautogui.keyDown(key)
+            for key in keys:
+                pyautogui.keyUp(key)
+            for key in keys:
+                self.after(0, lambda k=key: self.start_animation(k))
+
     def _play_notes_format(self, notes, mode, target_title=""):
-        note_map = {}
+        events = {}
         for note in notes:
-            time_ms, note_num = note[1], note[0]
-            note_str = str(note_num)
-            if note_str in NUMBERS:
-                idx = NUMBERS.index(note_str)
-                note_map[time_ms] = KEYS[idx]
-        sorted_times = sorted(note_map.keys())
-        self._start_timer()
-        for note_time in sorted_times:
-            if not self.is_playing:
-                break
-            while self._get_timer_ms() < note_time:
+            index, time_ms = int(note[0]), int(note[1])
+            if 0 <= index < len(KEY_ORDER):
+                events.setdefault(time_ms, []).append(KEY_ORDER[index])
+
+        start = time.perf_counter()
+        for note_time in sorted(events):
+            while True:
                 if not self.is_playing:
                     return
                 if mode == "game" and target_title and not self._is_target_focused(target_title):
+                    pause_start = time.perf_counter()
                     self.after(0, lambda: self.update_status("Paused — focus lost"))
                     if not self._wait_for_focus(target_title):
                         return
+                    start += time.perf_counter() - pause_start   # don't skip notes after a pause
                     self.after(0, lambda: self.update_status("Resumed"))
-                time.sleep(0.0005)
-            key = note_map[note_time]
-            if mode == "here":
-                self.press_key(key)
-            else:
-                pyautogui.press(key)
-                self.after(0, lambda k=key: self.start_animation(k))
+                remaining = note_time / 1000 - (time.perf_counter() - start)
+                if remaining <= 0:
+                    break
+                time.sleep(min(remaining, 0.005))
+            self._send_keys(events[note_time], mode)
 
     def _play_song_notes_format(self, notes, mode, target_title=""):
         if not notes:
             return
-        
-        first_time = notes[0].get("time", 0)
-        self._start_timer()
-        
+
+        first_time = min(note.get("time", 0) for note in notes)
+        events = {}
         for note in notes:
-            if not self.is_playing:
-                break
-            
             key_name = note.get("key", "")
-            time_ms = note.get("time", 0) - first_time
-            
-            if "Key" in key_name:
-                note_num = key_name.replace("1Key", "")
-                key = SKY_KEY_MAP.get(note_num)
-            else:
-                key = None
-            
+            if "Key" not in key_name:
+                continue
+            key = SKY_KEY_MAP.get(key_name.split("Key")[-1])
             if not key:
                 continue
-            
-            while self._get_timer_ms() < time_ms:
+            time_ms = note.get("time", 0) - first_time
+            keys = events.setdefault(time_ms, [])
+            if key not in keys:
+                keys.append(key)
+
+        start = time.perf_counter()
+        for note_time in sorted(events):
+            while True:
                 if not self.is_playing:
                     return
                 if mode == "game" and target_title and not self._is_target_focused(target_title):
+                    pause_start = time.perf_counter()
                     self.after(0, lambda: self.update_status("Paused — focus lost"))
                     if not self._wait_for_focus(target_title):
                         return
+                    start += time.perf_counter() - pause_start
                     self.after(0, lambda: self.update_status("Resumed"))
-                time.sleep(0.0005)
-            
-            if mode == "here":
-                self.press_key(key)
-            else:
-                pyautogui.press(key)
-                self.after(0, lambda k=key: self.start_animation(k))
+                remaining = note_time / 1000 - (time.perf_counter() - start)
+                if remaining <= 0:
+                    break
+                time.sleep(min(remaining, 0.005))
+            self._send_keys(events[note_time], mode)
 
-
-    def _start_timer(self):
-        now = time.time()
-        self.timer_start = now
-        self.timer_ms = int((now - int(now)) * 1000)
-
-    def _get_timer_ms(self):
-        elapsed = time.time() - self.timer_start
-        return self.timer_ms + int(elapsed * 1000)
 
     def destroy(self):
         self.processing = False
@@ -913,4 +1032,4 @@ if __name__ == "__main__":
         request_admin_and_restart()
     ctk.set_appearance_mode("dark")
     app = App()
-    app.mainloop()
+    app.mainloop()       
