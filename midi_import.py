@@ -118,43 +118,109 @@ def find_best_transpose(pitches):
     return best_shift
 
 
-def convert_notes(raw_notes, transpose, snap_sharps):
-    """raw_notes: [(time_ms, pitch)] -> ([(time_ms, key_index)], dropped_count)"""
+def fit_to_range(pitch):
+    """Fold a pitch by octaves until it is inside the Lyre range."""
+    while pitch < LYRE_LOW:
+        pitch += 12
+    while pitch > LYRE_HIGH:
+        pitch -= 12
+    return pitch
+
+
+def pick_white_neighbour(pitch, prev_pitch, next_pitch, taken, usage, total):
+    """Choose the white key (one semitone down or up) that fits a black-key note best."""
+    best, best_cost = None, None
+    for candidate in (pitch - 1, pitch + 1):
+        cost = 0.0
+        if candidate < LYRE_LOW or candidate > LYRE_HIGH:
+            cost += 100
+        # a repeated note (or two notes on the same key) is the worst result
+        if candidate == prev_pitch or candidate == next_pitch or candidate in taken:
+            cost += 3
+        # keep the melody direction (prev -> note -> next)
+        if prev_pitch is not None and next_pitch is not None:
+            low, high = sorted((prev_pitch, next_pitch))
+            if low <= pitch <= high and not low <= candidate <= high:
+                cost += 1
+        # prefer the neighbour that the song already uses a lot
+        cost -= 0.5 * usage[candidate % 12] / total
+        if best_cost is None or cost < best_cost:
+            best, best_cost = candidate, cost
+    return best
+
+
+def snap_channel(notes, usage, total):
+    """notes: [(time_ms, pitch)] of ONE channel, already transposed and fitted to the range.
+    Returns ([(time_ms, pitch)], snapped_count) where every pitch is a white key."""
+    groups = {}
+    for time_ms, pitch in notes:
+        groups.setdefault(time_ms, []).append(pitch)
+    times = sorted(groups)
+
+    result = []
+    snapped = 0
+    prev_final = []
+    for index, time_ms in enumerate(times):
+        pitches = groups[time_ms]
+        next_raw = groups[times[index + 1]] if index + 1 < len(times) else []
+        taken = {p for p in pitches if p % 12 in NATURAL_DEGREES}
+        final = []
+        for pitch in pitches:
+            if pitch % 12 in NATURAL_DEGREES:
+                final.append(pitch)
+                continue
+            prev_pitch = min(prev_final, key=lambda q: abs(q - pitch), default=None)
+            next_pitch = min(next_raw, key=lambda q: abs(q - pitch), default=None)
+            chosen = pick_white_neighbour(pitch, prev_pitch, next_pitch, taken, usage, total)
+            taken.add(chosen)
+            final.append(chosen)
+            snapped += 1
+        result.extend((time_ms, p) for p in final)
+        prev_final = final
+    return result, snapped
+
+
+def convert_notes(channel_notes, transpose, snap_sharps):
+    """channel_notes: one [(time_ms, pitch)] list per channel
+    -> ([(time_ms, key_index)], dropped_count, snapped_count)"""
+    fitted = [[(t, fit_to_range(p + transpose)) for t, p in notes] for notes in channel_notes]
+    usage = Counter(p % 12 for notes in fitted for _, p in notes if p % 12 in NATURAL_DEGREES)
+    total = max(sum(usage.values()), 1)
+
     result = set()
     dropped = 0
-    for time_ms, pitch in raw_notes:
-        p = pitch + transpose
-        while p < LYRE_LOW:
-            p += 12
-        while p > LYRE_HIGH:
-            p -= 12
-        semitone = (p - LYRE_LOW) % 12
-        octave_row = (p - LYRE_LOW) // 12          # 0 = bottom row (z), 2 = top row (q)
-        if semitone in NATURAL_DEGREES:
-            degree = NATURAL_DEGREES[semitone]
-        elif snap_sharps:
-            degree = NATURAL_DEGREES[semitone - 1]
-        else:
-            dropped += 1
-            continue
-        result.add((time_ms, (2 - octave_row) * 7 + degree))
-    return sorted(result), dropped
+    snapped = 0
+    for notes in fitted:
+        if snap_sharps:
+            notes, count = snap_channel(notes, usage, total)
+            snapped += count
+        for time_ms, p in notes:
+            semitone = p % 12                          # LYRE_LOW is a multiple of 12
+            if semitone not in NATURAL_DEGREES:
+                dropped += 1
+                continue
+            octave_row = (p - LYRE_LOW) // 12          # 0 = bottom row (z), 2 = top row (q)
+            result.add((time_ms, (2 - octave_row) * 7 + NATURAL_DEGREES[semitone]))
+    return sorted(result), dropped, snapped
 
 
 class MidiImportDialog(ctk.CTkToplevel):
-    def __init__(self, parent, midi_path, midi_info, sheets_dir):
+    def __init__(self, parent, midi_path, midi_info, sheets_dir, number=1, total=1):
         super().__init__(parent)
         self.app = parent
         self.midi_path = midi_path
         self.sheets_dir = sheets_dir
+        self.number = number
+        self.total = total
         self.channel_map = {ch.number: ch for ch in midi_info.channels}
         self.channel_vars = {}
         self.preview_buttons = {}
         self.preview_token = 0
         self.previewing = None      # channel number, "selection" or None
         self.saved_name = None
+        self.snapped_count = 0
 
-        self.title("Import MIDI")
+        self.title("Import MIDI" if total == 1 else f"Import MIDI ({number}/{total})")
         self.geometry("640x720")
         self.resizable(False, False)
         self.configure(fg_color=BG)
@@ -178,8 +244,11 @@ class MidiImportDialog(ctk.CTkToplevel):
 
         ctk.CTkLabel(self, text=f"🎼  {file_name}", text_color=TEXT,
                      font=ctk.CTkFont("Segoe UI", 16, "bold")).pack(pady=(16, 0))
-        ctk.CTkLabel(self, text=f"{minutes}:{seconds:02d}  ·  {len(self.channel_map)} channels with notes",
-                     text_color="#8890aa", font=ctk.CTkFont("Segoe UI", 12)).pack()
+        subtitle = f"{minutes}:{seconds:02d}  ·  {len(self.channel_map)} channels with notes"
+        if self.total > 1:
+            subtitle = f"File {self.number} of {self.total}  ·  " + subtitle
+        ctk.CTkLabel(self, text=subtitle, text_color="#8890aa",
+                     font=ctk.CTkFont("Segoe UI", 12)).pack()
         ctk.CTkLabel(self, text="Not sure which channel is which? Press ▶ to listen to it alone.",
                      text_color="#666a8a", font=ctk.CTkFont("Segoe UI", 11)).pack(pady=(4, 8))
 
@@ -201,8 +270,8 @@ class MidiImportDialog(ctk.CTkToplevel):
                                              command=lambda v: self._refresh_info())
         self.transpose_box.set("0")
         self.transpose_box.pack(side="left")
-        self.snap_var = ctk.BooleanVar(value=False)
-        ctk.CTkCheckBox(options, text="Snap sharps to nearest key", variable=self.snap_var,
+        self.snap_var = ctk.BooleanVar(value=True)
+        ctk.CTkCheckBox(options, text="Smart-snap sharps", variable=self.snap_var,
                         text_color=TEXT, command=self._on_option_change).pack(side="left", padx=14)
 
         self.info_label = ctk.CTkLabel(self, text="", text_color="#8890aa", font=ctk.CTkFont("Segoe UI", 11))
@@ -279,10 +348,10 @@ class MidiImportDialog(ctk.CTkToplevel):
         return find_best_transpose(pitches) if pitches else 0
 
     def _build_events(self, numbers, transpose):
-        raw = []
-        for n in numbers:
-            raw.extend(self.channel_map[n].notes)
-        return convert_notes(raw, transpose, self.snap_var.get())
+        events, dropped, snapped = convert_notes(
+            [self.channel_map[n].notes for n in numbers], transpose, self.snap_var.get())
+        self.snapped_count = snapped
+        return events, dropped
 
     def _on_option_change(self):
         self.transpose_box.configure(state="disabled" if self.auto_var.get() else "readonly")
@@ -297,7 +366,8 @@ class MidiImportDialog(ctk.CTkToplevel):
         events, dropped = self._build_events(numbers, transpose)
         mode = "auto" if self.auto_var.get() else "manual"
         self.info_label.configure(
-            text=f"Transpose: {transpose:+d} ({mode})  ·  {len(events)} notes  ·  {dropped} skipped (sharps)")
+            text=f"Transpose: {transpose:+d} ({mode})  ·  {len(events)} notes  ·  "
+                 f"{self.snapped_count} snapped  ·  {dropped} skipped (sharps)")
 
     # ---------------- preview ----------------
 

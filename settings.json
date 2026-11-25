@@ -4,8 +4,8 @@
             "Default_keys": "q w e r t y u a s d f g h j z x c v b n m",
             "language": "en",
             "keys": "q w e r t y u a s d f g h j z x c v b n m",
-            "changelog": "Now we can play MIDI files.",
-            "version": "3.5",
+            "changelog": "New light theme, ESC to stop anywhere, smarter MIDI import, update notifications.",
+            "version": "4.0",
             "target_window": "",
             "hide_stop_hint": false 
         }
